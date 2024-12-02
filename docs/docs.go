@@ -140,9 +140,431 @@ const docTemplate = `{
                 ],
                 "responses": {}
             }
+        },
+        "/company/review": {
+            "get": {
+                "description": "Get company reviews",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review",
+                    "Company"
+                ],
+                "summary": "Get company reviews",
+                "responses": {}
+            },
+            "post": {
+                "description": "Create company review",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review",
+                    "Company"
+                ],
+                "summary": "Create company review",
+                "parameters": [
+                    {
+                        "description": "Create company review",
+                        "name": "review",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.CreateReviewCompanyDto"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/company/review/{id}": {
+            "get": {
+                "description": "Get company review",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review",
+                    "Company"
+                ],
+                "summary": "Get company review",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "delete": {
+                "description": "Delete company review",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review",
+                    "Company"
+                ],
+                "summary": "Delete company review",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/service/review": {
+            "get": {
+                "description": "Get service reviews",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review",
+                    "Service"
+                ],
+                "summary": "Get service reviews",
+                "responses": {}
+            },
+            "post": {
+                "description": "Create service review",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review",
+                    "Service"
+                ],
+                "summary": "Create service review",
+                "parameters": [
+                    {
+                        "description": "Create service review",
+                        "name": "review",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.CreateReviewServiceDto"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/service/review/{id}": {
+            "get": {
+                "description": "Get service review",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review",
+                    "Service"
+                ],
+                "summary": "Get service review",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "delete": {
+                "description": "Delete service reviews",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review",
+                    "Service"
+                ],
+                "summary": "Delete service reviews",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/servicetype": {
+            "get": {
+                "description": "Get service types",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceType"
+                ],
+                "summary": "Get service types",
+                "responses": {}
+            },
+            "post": {
+                "description": "Create service type",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceType"
+                ],
+                "summary": "Create service type",
+                "parameters": [
+                    {
+                        "description": "Create service type",
+                        "name": "servicetype",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.CreateServiceTypeDto"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/servicetype/{id}": {
+            "get": {
+                "description": "Get service type",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceType"
+                ],
+                "summary": "Get service type",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "service type id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "delete": {
+                "description": "Delete service type",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceType"
+                ],
+                "summary": "Delete service type",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "service type id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/tag": {
+            "post": {
+                "description": "Create tag",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tags"
+                ],
+                "summary": "Create Tag",
+                "parameters": [
+                    {
+                        "description": "Create tag",
+                        "name": "tag",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.CreateTagDto"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/tag/{id}": {
+            "get": {
+                "description": "Get tag",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tags"
+                ],
+                "summary": "Get Tag",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Tag id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "delete": {
+                "description": "Delete tag",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tags"
+                ],
+                "summary": "Delete Tag",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Tag id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
         }
     },
     "definitions": {
+        "dtos.CreateReviewCompanyDto": {
+            "type": "object",
+            "required": [
+                "creator_username",
+                "rating"
+            ],
+            "properties": {
+                "creator_username": {
+                    "type": "string"
+                },
+                "header": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "integer",
+                    "maximum": 5,
+                    "minimum": 1
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "dtos.CreateReviewServiceDto": {
+            "type": "object",
+            "required": [
+                "creator_username",
+                "rating"
+            ],
+            "properties": {
+                "creator_username": {
+                    "type": "string"
+                },
+                "header": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "integer",
+                    "maximum": 5,
+                    "minimum": 1
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "dtos.CreateServiceTypeDto": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 1
+                }
+            }
+        },
+        "dtos.CreateTagDto": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 1
+                }
+            }
+        },
         "dtos.CreateUserDto": {
             "type": "object",
             "required": [

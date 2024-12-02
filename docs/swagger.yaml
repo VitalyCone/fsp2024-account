@@ -1,4 +1,54 @@
 definitions:
+  dtos.CreateReviewCompanyDto:
+    properties:
+      creator_username:
+        type: string
+      header:
+        type: string
+      rating:
+        maximum: 5
+        minimum: 1
+        type: integer
+      text:
+        type: string
+    required:
+    - creator_username
+    - rating
+    type: object
+  dtos.CreateReviewServiceDto:
+    properties:
+      creator_username:
+        type: string
+      header:
+        type: string
+      rating:
+        maximum: 5
+        minimum: 1
+        type: integer
+      text:
+        type: string
+    required:
+    - creator_username
+    - rating
+    type: object
+  dtos.CreateServiceTypeDto:
+    properties:
+      name:
+        maxLength: 50
+        minLength: 1
+        type: string
+    required:
+    - name
+    type: object
+  dtos.CreateTagDto:
+    properties:
+      name:
+        maxLength: 50
+        minLength: 1
+        type: string
+    required:
+    - name
+    type: object
   dtos.CreateUserDto:
     properties:
       first_name:
@@ -144,6 +194,248 @@ paths:
       summary: Register for user
       tags:
       - Authorization
+  /company/review:
+    get:
+      consumes:
+      - application/json
+      description: Get company reviews
+      produces:
+      - application/json
+      responses: {}
+      summary: Get company reviews
+      tags:
+      - Review
+      - Company
+    post:
+      consumes:
+      - application/json
+      description: Create company review
+      parameters:
+      - description: Create company review
+        in: body
+        name: review
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateReviewCompanyDto'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create company review
+      tags:
+      - Review
+      - Company
+  /company/review/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete company review
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete company review
+      tags:
+      - Review
+      - Company
+    get:
+      consumes:
+      - application/json
+      description: Get company review
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get company review
+      tags:
+      - Review
+      - Company
+  /service/review:
+    get:
+      consumes:
+      - application/json
+      description: Get service reviews
+      produces:
+      - application/json
+      responses: {}
+      summary: Get service reviews
+      tags:
+      - Review
+      - Service
+    post:
+      consumes:
+      - application/json
+      description: Create service review
+      parameters:
+      - description: Create service review
+        in: body
+        name: review
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateReviewServiceDto'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create service review
+      tags:
+      - Review
+      - Service
+  /service/review/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete service reviews
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete service reviews
+      tags:
+      - Review
+      - Service
+    get:
+      consumes:
+      - application/json
+      description: Get service review
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get service review
+      tags:
+      - Review
+      - Service
+  /servicetype:
+    get:
+      consumes:
+      - application/json
+      description: Get service types
+      produces:
+      - application/json
+      responses: {}
+      summary: Get service types
+      tags:
+      - ServiceType
+    post:
+      consumes:
+      - application/json
+      description: Create service type
+      parameters:
+      - description: Create service type
+        in: body
+        name: servicetype
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateServiceTypeDto'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create service type
+      tags:
+      - ServiceType
+  /servicetype/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete service type
+      parameters:
+      - description: service type id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete service type
+      tags:
+      - ServiceType
+    get:
+      consumes:
+      - application/json
+      description: Get service type
+      parameters:
+      - description: service type id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get service type
+      tags:
+      - ServiceType
+  /tag:
+    post:
+      consumes:
+      - application/json
+      description: Create tag
+      parameters:
+      - description: Create tag
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateTagDto'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create Tag
+      tags:
+      - Tags
+  /tag/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete tag
+      parameters:
+      - description: Tag id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete Tag
+      tags:
+      - Tags
+    get:
+      consumes:
+      - application/json
+      description: Get tag
+      parameters:
+      - description: Tag id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get Tag
+      tags:
+      - Tags
 securityDefinitions:
   ApiKeyAuth:
     in: header

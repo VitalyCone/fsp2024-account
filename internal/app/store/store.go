@@ -2,14 +2,17 @@ package store
 
 import (
 	"database/sql"
-	"log"
 	_ "github.com/lib/pq"
+	"log"
 )
 
 type Store struct {
 	config                *Config
 	db                    *sql.DB
-	usersRepository	*UsersRepository
+	usersRepository       *UsersRepository
+	tagRepository         *TagRepository
+	serviceTypeRepository *ServiceTypeRepository
+	reviewRepository      *ReviewRepository
 }
 
 func NewStore(config *Config) *Store {
@@ -50,4 +53,40 @@ func (s *Store) User() *UsersRepository {
 	}
 
 	return s.usersRepository
+}
+
+func (s *Store) Tag() *TagRepository {
+	if s.tagRepository != nil {
+		return s.tagRepository
+	}
+
+	s.tagRepository = &TagRepository{
+		store: s,
+	}
+
+	return s.tagRepository
+}
+
+func (s *Store) ServiceType() *ServiceTypeRepository {
+	if s.serviceTypeRepository != nil {
+		return s.serviceTypeRepository
+	}
+
+	s.serviceTypeRepository = &ServiceTypeRepository{
+		store: s,
+	}
+
+	return s.serviceTypeRepository
+}
+
+func (s *Store) Review() *ReviewRepository {
+	if s.reviewRepository != nil {
+		return s.reviewRepository
+	}
+
+	s.reviewRepository = &ReviewRepository{
+		store: s,
+	}
+
+	return s.reviewRepository
 }

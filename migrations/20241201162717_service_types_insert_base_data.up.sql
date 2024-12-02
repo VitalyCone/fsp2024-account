@@ -1,0 +1,1 @@
+INSERT INTO service_types (name) VALUES ('service'), ('company');

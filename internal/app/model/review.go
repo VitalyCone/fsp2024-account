@@ -3,9 +3,11 @@ package model
 import "time"
 
 type Review struct {
-	ID          int
-	ReviewType  ReviewType
-	TypeID     int
+	ID        int
+	TableName string
+	ObjectId  int
+	// ReviewType  ReviewType
+	// TypeID     int
 	Rating      int
 	CreatorUser User
 	Header      string

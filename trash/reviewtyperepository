@@ -1,0 +1,41 @@
+package store
+
+import "github.com/VitalyCone/account/internal/app/model"
+
+type ReviewTypeRepository struct {
+	store *Store
+}
+
+func (r *ReviewTypeRepository) Create(m *model.ReviewType) error{
+	if err := r.store.db.QueryRow(
+		"INSERT INTO review_types (name) "+
+			"VALUES ($1) RETURNING id",
+		m.Name).Scan(&m.ID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *ReviewTypeRepository) FindById(id int) (model.ReviewType, error){
+	var m model.ReviewType
+
+	m.ID = id
+	if err := r.store.db.QueryRow(
+		"SELECT (name) FROM review_types WHERE id = $1",
+		id).Scan(
+		&m.Name); err != nil {
+		return model.ReviewType{}, err
+	}
+	return m, nil
+}
+
+func (r *ReviewTypeRepository) DeleteById(id int) error{
+	if _, err := r.store.db.Exec(
+		"DELETE FROM review_types WHERE id = $1",
+		id); err != nil {
+		return err
+	}
+
+	return nil
+}

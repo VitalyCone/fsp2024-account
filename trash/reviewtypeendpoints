@@ -1,0 +1,88 @@
+package endpoints
+
+import (
+	"net/http"
+	"strconv"
+
+	"github.com/VitalyCone/account/internal/app/apiserver/dtos"
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+)
+
+// @Summary Create review type
+// @Schemes
+// @Description Create review type
+// @Tags ReviewType
+// @Accept json
+// @Produce json
+// @Param reviewtype body dtos.CreateReviewTypeDto true "Create review type"
+// @Router /reviewtype [POST]
+func (ep *Endpoints) PostReviewType(g *gin.Context){
+	var reviewTypeDto dtos.CreateReviewTypeDto
+
+	if err := g.BindJSON(&reviewTypeDto); err != nil{
+		g.JSON(http.StatusBadRequest, gin.H{"Invalid request data": err.Error()})
+        return
+	}
+
+	validate := validator.New()
+    if err := validate.Struct(reviewTypeDto); err != nil{
+        g.JSON(http.StatusBadRequest, gin.H{"Failed validation": err.Error()})
+        return
+    }
+
+	reviewTypeModel := reviewTypeDto.ToModel()
+
+	if err := ep.store.ReviewType().Create(&reviewTypeModel); err != nil{
+		g.JSON(http.StatusBadRequest, gin.H{"Review type already exists, or db error": err.Error()})
+		return
+	}
+
+	g.JSON(http.StatusCreated, reviewTypeModel)
+}
+
+// @Summary Get review type
+// @Schemes
+// @Description Get review type
+// @Tags ReviewType
+// @Accept json
+// @Produce json
+// @Param id path int true "review type id"
+// @Router /reviewtype/{id} [GET]
+func (ep *Endpoints) GetReviewType(g *gin.Context){
+	id, err := strconv.Atoi(g.Param("id"))
+	if err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})
+		return
+	}
+
+	serviceTypeModel, err := ep.store.ReviewType().FindById(id)
+	if err != nil{
+		g.JSON(http.StatusNotFound, gin.H{"Review type not found": error.Error(err)})
+		return
+	}
+
+	g.JSON(http.StatusOK, serviceTypeModel)
+}
+
+
+// @Summary Delete review type
+// @Schemes
+// @Description Delete review type
+// @Tags ReviewType
+// @Accept json
+// @Produce json
+// @Param id path int true "review type id"
+// @Router /reviewtype/{id} [DELETE]
+func (ep *Endpoints) DeleteReviewType(g *gin.Context){
+	id, err := strconv.Atoi(g.Param("id"))
+
+	if err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})
+		return
+	}
+
+	ep.store.ReviewType().DeleteById(id)
+
+	g.JSON(http.StatusNoContent, http.NoBody)
+}
