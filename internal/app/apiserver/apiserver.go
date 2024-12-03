@@ -58,7 +58,11 @@ func (s *APIServer) configureEndpoints() {
 		path.PUT("/account/info", endpoint.PutUserInfo)
 		path.DELETE("/account/delete", endpoint.DeleteUserInfo)
 
+		path.GET("/users", endpoint.GetUsers)
+		path.GET("/users/:username", endpoint.GetUser)
+
 		path.GET("/tag/:id", endpoint.GetTag)
+		path.GET("/tags", endpoint.GetTags)
 		path.POST("/tag", endpoint.PostTag)
 		path.DELETE("/tag/:id", endpoint.DeleteTag)
 
@@ -67,11 +71,13 @@ func (s *APIServer) configureEndpoints() {
 		path.POST("/servicetype", endpoint.PostServiceType)
 		path.DELETE("/servicetype/:id", endpoint.DeleteServiceType)
 
-		path.GET("/companies/review/:id", endpoint.GetCompanyReviews)
+		path.GET("/companies/reviews/:id", endpoint.GetCompanyReviews)
+		path.GET("/companies/review/:id", endpoint.GetCompanyReview)
 		path.POST("/companies/review", endpoint.PostCompanyReview)
 		path.DELETE("/companies/review/:id", endpoint.DeleteCompanyReview)
 
-		path.GET("/service/review/:id", endpoint.GetServiceReviews)
+		path.GET("/service/reviews/:id", endpoint.GetServiceReviews)
+		path.GET("/service/review/:id", endpoint.GetServiceReview)
 		path.POST("/service/review", endpoint.PostServiceReview)
 		path.DELETE("/service/review/:id", endpoint.DeleteServiceReview)
 

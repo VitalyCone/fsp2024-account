@@ -13,6 +13,7 @@ type Store struct {
 	tagRepository         *TagRepository
 	serviceTypeRepository *ServiceTypeRepository
 	reviewRepository      *ReviewRepository
+	companyRepository     *CompanyRepository
 }
 
 func NewStore(config *Config) *Store {
@@ -90,3 +91,16 @@ func (s *Store) Review() *ReviewRepository {
 
 	return s.reviewRepository
 }
+
+func (s *Store) Company() *CompanyRepository {
+	if s.companyRepository != nil {
+		return s.companyRepository
+	}
+
+	s.companyRepository = &CompanyRepository{
+		store: s,
+	}
+
+	return s.companyRepository
+}
+

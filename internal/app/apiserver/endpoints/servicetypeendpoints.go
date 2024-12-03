@@ -13,12 +13,37 @@ import (
 // @Schemes
 // @Description Create service type
 // @Tags ServiceType
+// @Security ApiKeyAuth
 // @Accept json
 // @Produce json
 // @Param servicetype body dtos.CreateServiceTypeDto true "Create service type"
 // @Router /servicetype [POST]
 func (ep *Endpoints) PostServiceType(g *gin.Context){
 	var serviceTypeDto dtos.CreateServiceTypeDto
+
+	tokenString := g.GetHeader("token")
+    if tokenString == ""{
+        g.JSON(http.StatusUnauthorized, "token nil")
+        return
+    }
+
+    token, err := verifyToken(tokenString)
+    if err != nil{
+        g.JSON(http.StatusUnauthorized, "token not verifed or nil")
+        return
+    }
+
+    roleJWT, err := token.Claims.GetAudience()
+    if err != nil{
+        g.JSON(http.StatusNotFound, "Failed to get subject from token")
+        return
+    }
+	role := roleJWT[0]
+
+	if role != AdminRole{
+		g.JSON(http.StatusForbidden, "Insufficient permissions")
+		return
+	}
 
 	if err := g.BindJSON(&serviceTypeDto); err != nil{
 		g.JSON(http.StatusBadRequest, gin.H{"Invalid request data": err.Error()})
@@ -87,11 +112,36 @@ func (ep *Endpoints) GetServiceTypes(g *gin.Context){
 // @Schemes
 // @Description Delete service type
 // @Tags ServiceType
+// @Security ApiKeyAuth
 // @Accept json
 // @Produce json
 // @Param id path int true "service type id"
 // @Router /servicetype/{id} [DELETE]
 func (ep *Endpoints) DeleteServiceType(g *gin.Context){
+	tokenString := g.GetHeader("token")
+    if tokenString == ""{
+        g.JSON(http.StatusUnauthorized, "token nil")
+        return
+    }
+
+    token, err := verifyToken(tokenString)
+    if err != nil{
+        g.JSON(http.StatusUnauthorized, "token not verifed or nil")
+        return
+    }
+
+    roleJWT, err := token.Claims.GetAudience()
+    if err != nil{
+        g.JSON(http.StatusNotFound, "Failed to get subject from token")
+        return
+    }
+	role := roleJWT[0]
+
+	if role != AdminRole{
+		g.JSON(http.StatusForbidden, "Insufficient permissions")
+		return
+	}
+
 	id, err := strconv.Atoi(g.Param("id"))
 
 	if err != nil {

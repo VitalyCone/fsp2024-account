@@ -9,6 +9,7 @@ type User struct {
 	PasswordHash string `json:"password_hash"`
 	FirstName    string `json:"first_name"`
 	SecondName   string `json:"second_name"`
+	Role         string `json:"role"`
 	// MemberIn     []Company
 	// ModeratorIn  []Company
 	CreatedAt time.Time `json:"created_at"`

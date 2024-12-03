@@ -11,6 +11,7 @@ type CreateUserDto struct {
 	Password   string `json:"password" form:"password" validate:"required,min=3,max=32"`
 	FirstName  string `json:"first_name" form:"first_name" validate:"required,max=50"`
 	SecondName string `json:"second_name" form:"second_name" validate:"required,max=50"`
+	Role        string `json:"role" form:"role" validate:"required,oneof=user admin"` //"user"/"admin"
 }
 func (c *CreateUserDto) ToModel(passHash string) model.User {
 	return model.User{
@@ -18,6 +19,7 @@ func (c *CreateUserDto) ToModel(passHash string) model.User {
 		PasswordHash: passHash,
 		FirstName:    c.FirstName,
 		SecondName:   c.SecondName,
+		Role:        c.Role,
 	}
 }
 
@@ -29,6 +31,7 @@ type ModifyUserDto struct {
 	FirstName   string `json:"first_name" form:"first_name" validate:"required,max=50"`
 	SecondName  string `json:"second_name" form:"second_name" validate:"required,max=50"`
 }
+
 func (u *ModifyUserDto) ToModel(passHash string) model.User {
 	return model.User{}
 }

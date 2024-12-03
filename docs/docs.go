@@ -142,21 +142,6 @@ const docTemplate = `{
             }
         },
         "/company/review": {
-            "get": {
-                "description": "Get company reviews",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Review",
-                    "Company"
-                ],
-                "summary": "Get company reviews",
-                "responses": {}
-            },
             "post": {
                 "description": "Create company review",
                 "consumes": [
@@ -201,7 +186,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "id",
+                        "description": "review id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -225,7 +210,33 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "id",
+                        "description": "company id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/company/reviews/{id}": {
+            "get": {
+                "description": "Get company reviews",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review",
+                    "Company"
+                ],
+                "summary": "Get company reviews",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "company id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -235,21 +246,6 @@ const docTemplate = `{
             }
         },
         "/service/review": {
-            "get": {
-                "description": "Get service reviews",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Review",
-                    "Service"
-                ],
-                "summary": "Get service reviews",
-                "responses": {}
-            },
             "post": {
                 "description": "Create service review",
                 "consumes": [
@@ -294,7 +290,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "id",
+                        "description": "review id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -327,6 +323,32 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/service/reviews/{id}": {
+            "get": {
+                "description": "Get service reviews",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review",
+                    "Service"
+                ],
+                "summary": "Get service reviews",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "service id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/servicetype": {
             "get": {
                 "description": "Get service types",
@@ -343,6 +365,11 @@ const docTemplate = `{
                 "responses": {}
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Create service type",
                 "consumes": [
                     "application/json"
@@ -393,6 +420,11 @@ const docTemplate = `{
                 "responses": {}
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Delete service type",
                 "consumes": [
                     "application/json"
@@ -418,6 +450,11 @@ const docTemplate = `{
         },
         "/tag": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Create tag",
                 "consumes": [
                     "application/json"
@@ -468,6 +505,11 @@ const docTemplate = `{
                 "responses": {}
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Delete tag",
                 "consumes": [
                     "application/json"
@@ -490,6 +532,63 @@ const docTemplate = `{
                 ],
                 "responses": {}
             }
+        },
+        "/tags": {
+            "get": {
+                "description": "Get tag",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tags"
+                ],
+                "summary": "Get Tag",
+                "responses": {}
+            }
+        },
+        "/users": {
+            "get": {
+                "description": "Get users data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get users data",
+                "responses": {}
+            }
+        },
+        "/users/{username}": {
+            "get": {
+                "description": "Get user data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get user data",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User username",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
         }
     },
     "definitions": {
@@ -497,7 +596,8 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "creator_username",
-                "rating"
+                "rating",
+                "service_id"
             ],
             "properties": {
                 "creator_username": {
@@ -510,6 +610,9 @@ const docTemplate = `{
                     "type": "integer",
                     "maximum": 5,
                     "minimum": 1
+                },
+                "service_id": {
+                    "type": "integer"
                 },
                 "text": {
                     "type": "string"
@@ -520,7 +623,8 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "creator_username",
-                "rating"
+                "rating",
+                "service_id"
             ],
             "properties": {
                 "creator_username": {
@@ -533,6 +637,9 @@ const docTemplate = `{
                     "type": "integer",
                     "maximum": 5,
                     "minimum": 1
+                },
+                "service_id": {
+                    "type": "integer"
                 },
                 "text": {
                     "type": "string"
@@ -570,6 +677,7 @@ const docTemplate = `{
             "required": [
                 "first_name",
                 "password",
+                "role",
                 "second_name",
                 "username"
             ],
@@ -582,6 +690,14 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 32,
                     "minLength": 3
+                },
+                "role": {
+                    "description": "\"user\"/\"admin\"",
+                    "type": "string",
+                    "enum": [
+                        "user",
+                        "admin"
+                    ]
                 },
                 "second_name": {
                     "type": "string",

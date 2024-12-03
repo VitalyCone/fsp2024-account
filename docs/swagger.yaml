@@ -9,11 +9,14 @@ definitions:
         maximum: 5
         minimum: 1
         type: integer
+      service_id:
+        type: integer
       text:
         type: string
     required:
     - creator_username
     - rating
+    - service_id
     type: object
   dtos.CreateReviewServiceDto:
     properties:
@@ -25,11 +28,14 @@ definitions:
         maximum: 5
         minimum: 1
         type: integer
+      service_id:
+        type: integer
       text:
         type: string
     required:
     - creator_username
     - rating
+    - service_id
     type: object
   dtos.CreateServiceTypeDto:
     properties:
@@ -58,6 +64,12 @@ definitions:
         maxLength: 32
         minLength: 3
         type: string
+      role:
+        description: '"user"/"admin"'
+        enum:
+        - user
+        - admin
+        type: string
       second_name:
         maxLength: 50
         type: string
@@ -68,6 +80,7 @@ definitions:
     required:
     - first_name
     - password
+    - role
     - second_name
     - username
     type: object
@@ -195,17 +208,6 @@ paths:
       tags:
       - Authorization
   /company/review:
-    get:
-      consumes:
-      - application/json
-      description: Get company reviews
-      produces:
-      - application/json
-      responses: {}
-      summary: Get company reviews
-      tags:
-      - Review
-      - Company
     post:
       consumes:
       - application/json
@@ -230,7 +232,7 @@ paths:
       - application/json
       description: Delete company review
       parameters:
-      - description: id
+      - description: company id
         in: path
         name: id
         required: true
@@ -247,7 +249,7 @@ paths:
       - application/json
       description: Get company review
       parameters:
-      - description: id
+      - description: review id
         in: path
         name: id
         required: true
@@ -259,18 +261,25 @@ paths:
       tags:
       - Review
       - Company
-  /service/review:
+  /company/reviews/{id}:
     get:
       consumes:
       - application/json
-      description: Get service reviews
+      description: Get company reviews
+      parameters:
+      - description: company id
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses: {}
-      summary: Get service reviews
+      summary: Get company reviews
       tags:
       - Review
-      - Service
+      - Company
+  /service/review:
     post:
       consumes:
       - application/json
@@ -312,7 +321,7 @@ paths:
       - application/json
       description: Get service review
       parameters:
-      - description: id
+      - description: review id
         in: path
         name: id
         required: true
@@ -321,6 +330,24 @@ paths:
       - application/json
       responses: {}
       summary: Get service review
+      tags:
+      - Review
+      - Service
+  /service/reviews/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get service reviews
+      parameters:
+      - description: service id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get service reviews
       tags:
       - Review
       - Service
@@ -349,6 +376,8 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - ApiKeyAuth: []
       summary: Create service type
       tags:
       - ServiceType
@@ -366,6 +395,8 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - ApiKeyAuth: []
       summary: Delete service type
       tags:
       - ServiceType
@@ -400,6 +431,8 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - ApiKeyAuth: []
       summary: Create Tag
       tags:
       - Tags
@@ -417,6 +450,8 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - ApiKeyAuth: []
       summary: Delete Tag
       tags:
       - Tags
@@ -436,6 +471,45 @@ paths:
       summary: Get Tag
       tags:
       - Tags
+  /tags:
+    get:
+      consumes:
+      - application/json
+      description: Get tag
+      produces:
+      - application/json
+      responses: {}
+      summary: Get Tag
+      tags:
+      - Tags
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Get users data
+      produces:
+      - application/json
+      responses: {}
+      summary: Get users data
+      tags:
+      - Users
+  /users/{username}:
+    get:
+      consumes:
+      - application/json
+      description: Get user data
+      parameters:
+      - description: User username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get user data
+      tags:
+      - Users
 securityDefinitions:
   ApiKeyAuth:
     in: header

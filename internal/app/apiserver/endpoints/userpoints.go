@@ -19,6 +19,11 @@ var(
     bcryptSalt = 10
 )
 
+const(
+    UserRole = "user"
+    AdminRole = "admin"
+)
+
 func createToken(user model.User)(string, jwt.Claims, error){
 
     claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -27,7 +32,7 @@ func createToken(user model.User)(string, jwt.Claims, error){
         "secondname": user.SecondName,
         "created_at": user.CreatedAt.Unix(),
         "updated_at": user.UpdatedAt.Unix(),
-		//"aud": getRole(username),           // Audience (user role)
+		"aud": user.Role,           // Audience (user role)
 		//"exp": time.Now().Add(time.Hour).Unix(), // Expiration time
 		"iat": time.Now().Unix(),                 // Issued at
 	})
@@ -166,28 +171,70 @@ func (ep *Endpoints) LoginUser(g *gin.Context){
 func (ep *Endpoints) GetUserInfo(g *gin.Context){
     tokenString := g.GetHeader("token")
     if tokenString == ""{
-        g.JSON(500, "token nil")
+        g.JSON(http.StatusUnauthorized, "token nil")
         return
     }
 
     token, err := verifyToken(tokenString)
     if err != nil{
-        g.JSON(500, "token not verifed or nil")
+        g.JSON(http.StatusUnauthorized, "token not verifed or nil")
         return
     }
 
     username, err := token.Claims.GetSubject()
     if err != nil{
-        g.JSON(500, "Failed to get subject from token")
+        g.JSON(http.StatusNotFound, "Failed to get subject from token")
+        return
+    }
+    
+    user, err := ep.store.User().FindUserByUsername(username)
+    if err != nil{
+        g.JSON(http.StatusNotFound, "User not found")
+        return
+    }
+    g.JSON(http.StatusOK, user)
+}
+
+// @Summary Get users data
+// @Schemes
+// @Description Get users data
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Router /users [GET]
+func (ep *Endpoints) GetUsers(g *gin.Context){
+    users, err := ep.store.User().FindAll()
+    if err != nil{
+        g.JSON(http.StatusNotFound, "Users not found")
+        return
+    }
+
+    g.JSON(http.StatusOK, users)
+}
+
+// @Summary Get user data
+// @Schemes
+// @Description Get user data
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param username path string true "User username"
+// @Router /users/{username} [GET]
+func (ep *Endpoints) GetUser(g *gin.Context){
+    username := g.Param("username")
+
+    if username == ""{
+        g.JSON(http.StatusBadRequest, "Username is nil")
         return
     }
 
     user, err := ep.store.User().FindUserByUsername(username)
     if err != nil{
-        g.JSON(500, "User not found")
+        g.JSON(http.StatusNotFound, "User not found")
         return
     }
-    g.JSON(200, user)
+
+    g.JSON(http.StatusOK, user)
 }
 
 // @Summary Get user token data

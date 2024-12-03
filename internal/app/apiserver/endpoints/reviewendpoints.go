@@ -9,6 +9,17 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+
+
+
+/*
+
+------------SERVICE-------------
+
+*/
+
+
+
 // @Summary Create service review
 // @Schemes
 // @Description Create service review
@@ -46,7 +57,7 @@ func (ep *Endpoints) PostServiceReview(g *gin.Context){
 // @Accept json
 // @Produce json
 // @Param id path int true "service id"
-// @Router /service/review/{id} [GET]
+// @Router /service/reviews/{id} [GET]
 func (ep *Endpoints) GetServiceReviews(g *gin.Context){
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
@@ -57,6 +68,30 @@ func (ep *Endpoints) GetServiceReviews(g *gin.Context){
 	reviewModel, err := ep.store.Review().FindAllByObjectId(dtos.ReviewServicesTable, id)
 	if err != nil{
 		g.JSON(http.StatusNotFound, gin.H{"Service reviews not found": error.Error(err)})
+		return
+	}
+
+	g.JSON(http.StatusOK, reviewModel)
+}
+
+// @Summary Get service review
+// @Schemes
+// @Description Get service review
+// @Tags Review,Service
+// @Accept json
+// @Produce json
+// @Param id path int true "review id"
+// @Router /service/review/{id} [GET]
+func (ep *Endpoints) GetServiceReview(g *gin.Context){
+	id, err := strconv.Atoi(g.Param("id"))
+	if err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})
+		return
+	}
+
+	reviewModel, err := ep.store.Review().FindById(dtos.ReviewServicesTable, id)
+	if err != nil{
+		g.JSON(http.StatusNotFound, gin.H{"Service review not found": error.Error(err)})
 		return
 	}
 
@@ -131,7 +166,7 @@ func (ep *Endpoints) PostCompanyReview(g *gin.Context){
 // @Accept json
 // @Produce json
 // @Param id path int true "company id"
-// @Router /company/review/{id} [GET]
+// @Router /company/reviews/{id} [GET]
 func (ep *Endpoints) GetCompanyReviews(g *gin.Context){
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
@@ -142,6 +177,30 @@ func (ep *Endpoints) GetCompanyReviews(g *gin.Context){
 	reviewModel, err := ep.store.Review().FindAllByObjectId(dtos.ReviewCompaniesTable, id)
 	if err != nil{
 		g.JSON(http.StatusNotFound, gin.H{"Service reviews not found": error.Error(err)})
+		return
+	}
+
+	g.JSON(http.StatusOK, reviewModel)
+}
+
+// @Summary Get company review
+// @Schemes
+// @Description Get company review
+// @Tags Review,Company
+// @Accept json
+// @Produce json
+// @Param id path int true "review id"
+// @Router /company/review/{id} [GET]
+func (ep *Endpoints) GetCompanyReview(g *gin.Context){
+	id, err := strconv.Atoi(g.Param("id"))
+	if err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})
+		return
+	}
+
+	reviewModel, err := ep.store.Review().FindById(dtos.ReviewCompaniesTable, id)
+	if err != nil{
+		g.JSON(http.StatusNotFound, gin.H{"Company review not found": error.Error(err)})
 		return
 	}
 
@@ -168,41 +227,3 @@ func (ep *Endpoints) DeleteCompanyReview(g *gin.Context){
 
 	g.JSON(http.StatusNoContent, http.NoBody)
 }
-
-
-
-/*
-
-
-
-
-Общее
-
-
-
-
-*/
-
-// // @Summary Get review
-// // @Schemes
-// // @Description Get review
-// // @Tags Review
-// // @Accept json
-// // @Produce json
-// // @Param id path int true "id"
-// // @Router /review/{id} [GET]
-// func (ep *Endpoints) GetReview(g *gin.Context){
-// 	id, err := strconv.Atoi(g.Param("id"))
-// 	if err != nil {
-// 		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})
-// 		return
-// 	}
-
-// 	reviewModel, err := ep.store.Review().FindById()
-// 	if err != nil{
-// 		g.JSON(http.StatusNotFound, gin.H{"Service reviews not found": error.Error(err)})
-// 		return
-// 	}
-
-// 	g.JSON(http.StatusOK, reviewModel)
-// }
