@@ -1,4 +1,17 @@
 definitions:
+  dtos.CreateCompanyDto:
+    properties:
+      avatar:
+        type: string
+      description:
+        type: string
+      name:
+        maxLength: 100
+        minLength: 1
+        type: string
+    required:
+    - name
+    type: object
   dtos.CreateReviewCompanyDto:
     properties:
       creator_username:
@@ -36,6 +49,22 @@ definitions:
     - creator_username
     - rating
     - service_id
+    type: object
+  dtos.CreateServiceDto:
+    properties:
+      company_id:
+        type: integer
+      price:
+        type: number
+      service_type_id:
+        type: integer
+      text:
+        type: string
+    required:
+    - company_id
+    - price
+    - service_type_id
+    - text
     type: object
   dtos.CreateServiceTypeDto:
     properties:
@@ -207,6 +236,86 @@ paths:
       summary: Register for user
       tags:
       - Authorization
+  /company:
+    post:
+      consumes:
+      - application/json
+      description: Create company
+      parameters:
+      - description: Create company dto
+        in: body
+        name: company
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateCompanyDto'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Create company
+      tags:
+      - Company
+  /company/{company_id}/service/{service_id}:
+    get:
+      consumes:
+      - application/json
+      description: Delete services
+      parameters:
+      - description: service id
+        in: path
+        name: service_id
+        required: true
+        type: integer
+      - description: company id
+        in: path
+        name: company_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Delete services
+      tags:
+      - Company
+      - Service
+  /company/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Create company
+      parameters:
+      - description: company id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Create company
+      tags:
+      - Company
+  /company/{id}/services:
+    get:
+      consumes:
+      - application/json
+      description: Get services
+      parameters:
+      - description: service id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get services
+      tags:
+      - Company
+      - Service
   /company/review:
     post:
       consumes:
@@ -279,6 +388,26 @@ paths:
       tags:
       - Review
       - Company
+  /service:
+    post:
+      consumes:
+      - application/json
+      description: Create service
+      parameters:
+      - description: Create service dto
+        in: body
+        name: serviceDto
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateServiceDto'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Create service
+      tags:
+      - Service
   /service/review:
     post:
       consumes:

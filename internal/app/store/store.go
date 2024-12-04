@@ -14,6 +14,8 @@ type Store struct {
 	serviceTypeRepository *ServiceTypeRepository
 	reviewRepository      *ReviewRepository
 	companyRepository     *CompanyRepository
+	participantRepository *ParticipantRepository
+	serviceRepository     *ServiceRepository
 }
 
 func NewStore(config *Config) *Store {
@@ -104,3 +106,26 @@ func (s *Store) Company() *CompanyRepository {
 	return s.companyRepository
 }
 
+func (s *Store) Participant() *ParticipantRepository {
+	if s.participantRepository != nil {
+		return s.participantRepository
+	}
+
+	s.participantRepository = &ParticipantRepository{
+		store: s,
+	}
+
+	return s.participantRepository
+}
+
+func (s *Store) Service() *ServiceRepository {
+	if s.serviceRepository != nil {
+		return s.serviceRepository
+	}
+
+	s.serviceRepository = &ServiceRepository{
+		store: s,
+	}
+
+	return s.serviceRepository
+}

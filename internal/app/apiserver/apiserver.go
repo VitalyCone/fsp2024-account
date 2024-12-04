@@ -71,11 +71,16 @@ func (s *APIServer) configureEndpoints() {
 		path.POST("/servicetype", endpoint.PostServiceType)
 		path.DELETE("/servicetype/:id", endpoint.DeleteServiceType)
 
+		path.POST("/company", endpoint.PostCompany)
+		path.GET("/company/:id", endpoint.GetCompany)
+		path.GET("/company/:id/services", endpoint.GetServices)
+		path.DELETE("/company/:company_id/service/:service_id", endpoint.DeleteService)
 		path.GET("/companies/reviews/:id", endpoint.GetCompanyReviews)
 		path.GET("/companies/review/:id", endpoint.GetCompanyReview)
 		path.POST("/companies/review", endpoint.PostCompanyReview)
 		path.DELETE("/companies/review/:id", endpoint.DeleteCompanyReview)
 
+		path.GET("/service", endpoint.PostService)
 		path.GET("/service/reviews/:id", endpoint.GetServiceReviews)
 		path.GET("/service/review/:id", endpoint.GetServiceReview)
 		path.POST("/service/review", endpoint.PostServiceReview)

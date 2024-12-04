@@ -2,13 +2,23 @@ package endpoints
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/VitalyCone/account/internal/app/apiserver/dtos"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
 
-func (ep *Endpoints) CreateCompany(g *gin.Context) {
+// @Summary Create company
+// @Schemes
+// @Description Create company
+// @Security ApiKeyAuth
+// @Tags Company
+// @Accept json
+// @Produce json
+// @Param company body dtos.CreateCompanyDto true "Create company dto"
+// @Router /company [POST]
+func (ep *Endpoints) PostCompany(g *gin.Context) {
 	var createCompanyDto dtos.CreateCompanyDto
 
 	tokenString := g.GetHeader("token")
@@ -40,10 +50,39 @@ func (ep *Endpoints) CreateCompany(g *gin.Context) {
         return
     }
 
-	g.JSON(200, "In develope " +username)
+    //ДОДЕЛАТЬ ТЕГИ
 
-	//user := model.User{Username: username}
+	companyModel := createCompanyDto.ToModel()
 
-	// companyModel := createCompanyDto.ToModel()
+    if err := ep.store.Company().Create(&companyModel ,username, dtos.MembersParticipantTable, dtos.ModeratorsParticipantTable); err != nil{
+        g.JSON(http.StatusBadRequest, gin.H{"Failed to create company": err.Error()})
+        return
+    }
 
+    g.JSON(http.StatusCreated, companyModel)
+}
+
+// @Summary Create company
+// @Schemes
+// @Description Create company
+// @Tags Company
+// @Accept json
+// @Produce json
+// @Param id path int true "company id"
+// @Router /company/{id} [GET]
+func (ep *Endpoints) GetCompany(g *gin.Context) {
+	id, err := strconv.Atoi(g.Param("id"))
+	if err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})
+		return
+	}
+
+    companyModel, err := ep.store.Company().FindById(
+        id, dtos.MembersParticipantTable, dtos.ModeratorsParticipantTable, dtos.ReviewCompaniesTable)
+    if err != nil{
+        g.JSON(http.StatusBadRequest, gin.H{"Failed to get company": err.Error()})
+        return
+    }
+
+    g.JSON(http.StatusOK, companyModel)
 }

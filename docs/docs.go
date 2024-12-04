@@ -141,6 +141,38 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/company": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create company",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Create company",
+                "parameters": [
+                    {
+                        "description": "Create company dto",
+                        "name": "company",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.CreateCompanyDto"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/company/review": {
             "post": {
                 "description": "Create company review",
@@ -240,6 +272,127 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/company/{company_id}/service/{service_id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete services",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company",
+                    "Service"
+                ],
+                "summary": "Delete services",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "service id",
+                        "name": "service_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "company id",
+                        "name": "company_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/company/{id}": {
+            "get": {
+                "description": "Create company",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Create company",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "company id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/company/{id}/services": {
+            "get": {
+                "description": "Get services",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company",
+                    "Service"
+                ],
+                "summary": "Get services",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "service id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/service": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service"
+                ],
+                "summary": "Create service",
+                "parameters": [
+                    {
+                        "description": "Create service dto",
+                        "name": "serviceDto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.CreateServiceDto"
+                        }
                     }
                 ],
                 "responses": {}
@@ -592,6 +745,25 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dtos.CreateCompanyDto": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
+                }
+            }
+        },
         "dtos.CreateReviewCompanyDto": {
             "type": "object",
             "required": [
@@ -639,6 +811,29 @@ const docTemplate = `{
                     "minimum": 1
                 },
                 "service_id": {
+                    "type": "integer"
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "dtos.CreateServiceDto": {
+            "type": "object",
+            "required": [
+                "company_id",
+                "price",
+                "service_type_id",
+                "text"
+            ],
+            "properties": {
+                "company_id": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "service_type_id": {
                     "type": "integer"
                 },
                 "text": {

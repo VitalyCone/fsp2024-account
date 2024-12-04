@@ -55,6 +55,36 @@ func (r *UsersRepository) FindUserByUsername(username string) (model.User, error
 	return m, nil
 }
 
+func (r *UsersRepository) FindUsersByParticipants(participants []model.Participant) ([]model.User, error) {
+	users := make([]model.User, 0)
+
+	stmt, err := r.store.db.Prepare("SELECT * FROM users WHERE username = $1")
+	if err != nil{
+		return nil, err
+	}
+	defer stmt.Close()
+
+	for _, participant := range participants {
+		var user model.User
+		err := stmt.QueryRow(participant.User.Username).Scan(
+			&user.ID, &user.Username, &user.PasswordHash, &user.FirstName, &user.SecondName, &user.Role, &user.CreatedAt, &user.UpdatedAt, &user.Avatar)
+		if err != nil{
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
+	// if err := r.store.db.QueryRow(
+	// 	"SELECT * FROM users WHERE username = $1",
+	// 	username).Scan(
+	// 	&m.ID, &m.Username, &m.PasswordHash, &m.FirstName, &m.SecondName, &m.Role, &m.CreatedAt, &m.UpdatedAt, &m.Avatar); err != nil {
+	// 	return model.User{}, err
+	// }
+	// return m, nil
+}
+
 func (r *UsersRepository) DeleteUserByUsername(username string) error {
 	if _, err := r.store.db.Exec(
 		"DELETE FROM users WHERE username = $1",
