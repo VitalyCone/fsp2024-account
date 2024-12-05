@@ -23,13 +23,39 @@ import (
 // @Summary Create service review
 // @Schemes
 // @Description Create service review
+// @Security ApiKeyAuth
 // @Tags Review,Service
 // @Accept json
 // @Produce json
+// @Param service_id path int true "service id"
 // @Param review body dtos.CreateReviewServiceDto true "Create service review"
-// @Router /service/review [POST]
+// @Router /company/service/{service_id}/review [POST]
 func (ep *Endpoints) PostServiceReview(g *gin.Context){
 	var createReviewServiceDto dtos.CreateReviewServiceDto
+
+	tokenString := g.GetHeader("token")
+    if tokenString == ""{
+        g.JSON(http.StatusUnauthorized, "token nil")
+        return
+    }
+
+    token, err := verifyToken(tokenString)
+    if err != nil{
+        g.JSON(http.StatusUnauthorized, "token not verifed or nil")
+        return
+    }
+
+    username, err := token.Claims.GetSubject()
+    if err != nil{
+        g.JSON(http.StatusNotFound, "Failed to get subject from token")
+        return
+    }
+
+	id, err := strconv.Atoi(g.Param("service_id"))
+	if err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})
+		return
+	}
 
 	if err := g.BindJSON(&createReviewServiceDto); err != nil{
 		g.JSON(http.StatusBadRequest, gin.H{"Invalid request data": err.Error()})
@@ -42,11 +68,11 @@ func (ep *Endpoints) PostServiceReview(g *gin.Context){
         return
     }
 
-	reviewServiceModel := createReviewServiceDto.ToModel()
+	reviewServiceModel := createReviewServiceDto.ToModel(id, username)
 
 	ep.store.Review().Create(&reviewServiceModel)
 
-	g.JSON(http.StatusCreated, reviewServiceModel)
+	g.JSON(http.StatusCreated, dtos.ReviewToResponce(reviewServiceModel))
 }
 
 
@@ -56,16 +82,16 @@ func (ep *Endpoints) PostServiceReview(g *gin.Context){
 // @Tags Review,Service
 // @Accept json
 // @Produce json
-// @Param id path int true "service id"
-// @Router /service/reviews/{id} [GET]
+// @Param service_id path int true "service id"
+// @Router /service/{service_id}/reviews [GET]
 func (ep *Endpoints) GetServiceReviews(g *gin.Context){
-	id, err := strconv.Atoi(g.Param("id"))
+	id, err := strconv.Atoi(g.Param("service_id"))
 	if err != nil {
 		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})
 		return
 	}
 
-	reviewModel, err := ep.store.Review().FindAllByObjectId(dtos.ReviewServicesTable, id)
+	reviewModel, err := ep.store.Review().FindAllByObjectIdToResponse(dtos.ReviewServicesTable, id)
 	if err != nil{
 		g.JSON(http.StatusNotFound, gin.H{"Service reviews not found": error.Error(err)})
 		return
@@ -80,10 +106,10 @@ func (ep *Endpoints) GetServiceReviews(g *gin.Context){
 // @Tags Review,Service
 // @Accept json
 // @Produce json
-// @Param id path int true "review id"
-// @Router /service/review/{id} [GET]
+// @Param review_id path int true "review id"
+// @Router /service/review/{review_id} [GET]
 func (ep *Endpoints) GetServiceReview(g *gin.Context){
-	id, err := strconv.Atoi(g.Param("id"))
+	id, err := strconv.Atoi(g.Param("review_id"))
 	if err != nil {
 		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})
 		return
@@ -95,7 +121,7 @@ func (ep *Endpoints) GetServiceReview(g *gin.Context){
 		return
 	}
 
-	g.JSON(http.StatusOK, reviewModel)
+	g.JSON(http.StatusOK, dtos.ReviewToResponce(reviewModel))
 }
 
 // @Summary Delete service reviews
@@ -104,10 +130,10 @@ func (ep *Endpoints) GetServiceReview(g *gin.Context){
 // @Tags Review,Service
 // @Accept json
 // @Produce json
-// @Param id path int true "id"
-// @Router /service/review/{id} [DELETE]
+// @Param review_id path int true "review id"
+// @Router /service/review/{review_id} [DELETE]
 func (ep *Endpoints) DeleteServiceReview(g *gin.Context){
-	id, err := strconv.Atoi(g.Param("id"))
+	id, err := strconv.Atoi(g.Param("review_id"))
 
 	if err != nil {
 		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})
@@ -132,13 +158,40 @@ func (ep *Endpoints) DeleteServiceReview(g *gin.Context){
 // @Summary Create company review
 // @Schemes
 // @Description Create company review
+// @Security ApiKeyAuth
 // @Tags Review,Company
 // @Accept json
 // @Produce json
+// @Param company_id path int true "company id"
 // @Param review body dtos.CreateReviewCompanyDto true "Create company review"
-// @Router /company/review [POST]
+// @Router /company/{company_id}/review [POST]
 func (ep *Endpoints) PostCompanyReview(g *gin.Context){
 	var createReviewCompanyDto dtos.CreateReviewCompanyDto
+
+	tokenString := g.GetHeader("token")
+    if tokenString == ""{
+        g.JSON(http.StatusUnauthorized, "token nil")
+        return
+    }
+
+    token, err := verifyToken(tokenString)
+    if err != nil{
+        g.JSON(http.StatusUnauthorized, "token not verifed or nil")
+        return
+    }
+
+    username, err := token.Claims.GetSubject()
+    if err != nil{
+        g.JSON(http.StatusNotFound, "Failed to get subject from token")
+        return
+    }
+
+	id, err := strconv.Atoi(g.Param("company_id"))
+	if err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})
+		return
+	}
+
 
 	if err := g.BindJSON(&createReviewCompanyDto); err != nil{
 		g.JSON(http.StatusBadRequest, gin.H{"Invalid request data": err.Error()})
@@ -151,11 +204,11 @@ func (ep *Endpoints) PostCompanyReview(g *gin.Context){
         return
     }
 
-	reviewCompanyModel := createReviewCompanyDto.ToModel()
+	reviewCompanyModel := createReviewCompanyDto.ToModel(id, username)
 
 	ep.store.Review().Create(&reviewCompanyModel)
 
-	g.JSON(http.StatusCreated, reviewCompanyModel)
+	g.JSON(http.StatusCreated, dtos.ReviewToResponce(reviewCompanyModel))
 }
 
 
@@ -165,16 +218,16 @@ func (ep *Endpoints) PostCompanyReview(g *gin.Context){
 // @Tags Review,Company
 // @Accept json
 // @Produce json
-// @Param id path int true "company id"
-// @Router /company/reviews/{id} [GET]
+// @Param company_id path int true "company id"
+// @Router /company/{company_id}/reviews [GET]
 func (ep *Endpoints) GetCompanyReviews(g *gin.Context){
-	id, err := strconv.Atoi(g.Param("id"))
+	id, err := strconv.Atoi(g.Param("company_id"))
 	if err != nil {
 		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})
 		return
 	}
 
-	reviewModel, err := ep.store.Review().FindAllByObjectId(dtos.ReviewCompaniesTable, id)
+	reviewModel, err := ep.store.Review().FindAllByObjectIdToResponse(dtos.ReviewCompaniesTable, id)
 	if err != nil{
 		g.JSON(http.StatusNotFound, gin.H{"Service reviews not found": error.Error(err)})
 		return
@@ -189,10 +242,10 @@ func (ep *Endpoints) GetCompanyReviews(g *gin.Context){
 // @Tags Review,Company
 // @Accept json
 // @Produce json
-// @Param id path int true "review id"
-// @Router /company/review/{id} [GET]
+// @Param review_id path int true "review id"
+// @Router /company/review/{review_id} [GET]
 func (ep *Endpoints) GetCompanyReview(g *gin.Context){
-	id, err := strconv.Atoi(g.Param("id"))
+	id, err := strconv.Atoi(g.Param("review_id"))
 	if err != nil {
 		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})
 		return
@@ -204,7 +257,7 @@ func (ep *Endpoints) GetCompanyReview(g *gin.Context){
 		return
 	}
 
-	g.JSON(http.StatusOK, reviewModel)
+	g.JSON(http.StatusOK, dtos.ReviewToResponce(reviewModel))
 }
 
 // @Summary Delete company review
@@ -213,10 +266,10 @@ func (ep *Endpoints) GetCompanyReview(g *gin.Context){
 // @Tags Review,Company
 // @Accept json
 // @Produce json
-// @Param id path int true "company id"
-// @Router /company/review/{id} [DELETE]
+// @Param review_id path int true "company id"
+// @Router /company/review/{review_id} [DELETE]
 func (ep *Endpoints) DeleteCompanyReview(g *gin.Context){
-	id, err := strconv.Atoi(g.Param("id"))
+	id, err := strconv.Atoi(g.Param("review_id"))
 
 	if err != nil {
 		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})

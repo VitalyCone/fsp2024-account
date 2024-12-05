@@ -1,6 +1,10 @@
 package dtos
 
-import "github.com/VitalyCone/account/internal/app/model"
+import (
+	"time"
+
+	"github.com/VitalyCone/account/internal/app/model"
+)
 
 const (
 	ReviewServicesTable  = "review_services"
@@ -8,49 +12,75 @@ const (
 )
 
 type CreateReviewServiceDto struct {
-	ServiceId       int    `json:"service_id" validate:"required, numeric"`
 	Rating          int    `json:"rating" validate:"required,min=1,max=5"`
-	CreatorUsername string `json:"creator_username" validate:"required"`
 	Header          string `json:"header"`
 	Text            string `json:"text"`
 }
 
 type CreateReviewCompanyDto struct {
-	CompanyId       int    `json:"service_id" validate:"required, numeric"`
 	Rating          int    `json:"rating" validate:"required,min=1,max=5"`
-	CreatorUsername string `json:"creator_username" validate:"required"`
 	Header          string `json:"header"`
 	Text            string `json:"text"`
 }
 
-// ID          int
-// ReviewType  ReviewType
-// TypeID     int
-// Rating      int
-// CreatorUser User
-// Header      string
-// Text        string
-// CreatedAt   time.Time
-// UpdatedAt   time.Time
+type ReviewResponce struct{
+	ID        int
+	TableName string
+	ObjectId  int
+	Rating      int
+	CreatorUser UserResponse
+	Header      string
+	Text        string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
 
-func (t *CreateReviewServiceDto) ToModel() model.Review {
+func ReviewToResponce(m model.Review) ReviewResponce{
+
+	return ReviewResponce{
+		ID:        m.ID,
+		TableName: m.TableName,
+		ObjectId:  m.ObjectId,
+		Rating:      m.Rating,
+		CreatorUser: UserToResponse(m.CreatorUser),
+		Header:      m.Header,
+		Text:        m.Text,
+		CreatedAt:   m.CreatedAt,
+		UpdatedAt:   m.UpdatedAt,
+	}
+}
+	// ID        int
+	// TableName string
+	// ObjectId  int
+	// // ReviewType  ReviewType
+	// // TypeID     int
+	// Rating      int
+	// CreatorUser User
+	// Header      string
+	// Text        string
+	// CreatedAt   time.Time
+	// UpdatedAt   time.Time
+
+func (t *CreateReviewServiceDto) ToModel(serviceId int, username string) model.Review {
 	return model.Review{
-		ObjectId:    t.ServiceId,
+		ObjectId:    serviceId,
 		TableName:   ReviewServicesTable,
 		Rating:      t.Rating,
-		CreatorUser: model.User{Username: t.CreatorUsername},
+		CreatorUser: model.User{Username: username},
 		Header:      t.Header,
 		Text:        t.Text,
 	}
 }
 
-func (t *CreateReviewCompanyDto) ToModel() model.Review {
+func (t *CreateReviewCompanyDto) ToModel(companyId int, username string) model.Review {
 	return model.Review{
-		ObjectId:    t.CompanyId,
+		ObjectId:    companyId,
 		TableName:   ReviewCompaniesTable,
 		Rating:      t.Rating,
-		CreatorUser: model.User{Username: t.CreatorUsername},
+		CreatorUser: model.User{Username: username},
 		Header:      t.Header,
 		Text:        t.Text,
 	}
 }
+
+

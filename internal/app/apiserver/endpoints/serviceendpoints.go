@@ -13,11 +13,12 @@ import (
 // @Schemes
 // @Description Create service
 // @Security ApiKeyAuth
-// @Tags Service
+// @Tags Company,Service
 // @Accept json
 // @Produce json
+// @Param company_id path int true "company id"
 // @Param serviceDto body dtos.CreateServiceDto true "Create service dto"
-// @Router /service [POST]
+// @Router /company/{company_id}/service [POST]
 func (ep *Endpoints) PostService(g *gin.Context) {
 	var createServiceDto dtos.CreateServiceDto
 	
@@ -39,7 +40,13 @@ func (ep *Endpoints) PostService(g *gin.Context) {
 		return
 	}
 
-	exist, err := ep.store.Participant().IsParticipant(username, dtos.ModeratorsParticipantTable, createServiceDto.CompanyID)
+	id, err := strconv.Atoi(g.Param("company_id"))
+	if err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})
+		return
+	}
+
+	exist, err := ep.store.Participant().IsParticipant(username, dtos.ModeratorsParticipantTable, id)
 	if err != nil{
 		g.JSON(http.StatusNotFound, "Failed to get permissions")
 		return
@@ -61,14 +68,14 @@ func (ep *Endpoints) PostService(g *gin.Context) {
 		return
 	}
 
-	serviceModel := createServiceDto.ToModel()
+	serviceModel := createServiceDto.ToModel(id)
 	err = ep.store.Service().Create(&serviceModel)
 	if err != nil{
-		g.JSON(http.StatusInternalServerError, "Failed to create service")
+		g.JSON(http.StatusInternalServerError, gin.H{"Failed to create service": err.Error()})
 		return
 	}
 
-	g.JSON(http.StatusCreated, dtos.ServiceToDto(serviceModel))
+	g.JSON(http.StatusCreated, dtos.ModelServiceToResponse(serviceModel))
 }
 
 // @Summary Get services
@@ -77,21 +84,48 @@ func (ep *Endpoints) PostService(g *gin.Context) {
 // @Tags Company,Service
 // @Accept json
 // @Produce json
-// @Param id path int true "service id"
-// @Router /company/{id}/services [GET]
+// @Param company_id path int true "company id"
+// @Router /company/{company_id}/services [GET]
 func (ep *Endpoints) GetServices(g *gin.Context) {
-	id, err := strconv.Atoi(g.Param("id"))
+	id, err := strconv.Atoi(g.Param("company_id"))
 	if err != nil {
 		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})
 		return
 	}
 
-	services, err := ep.store.Service().FindByCompanyId(id)
+	services, err := ep.store.Service().FindByCompanyIdToResponse(id)
 	if err != nil{
-		g.JSON(http.StatusInternalServerError, "Failed to get services")
+		g.JSON(http.StatusInternalServerError, gin.H{"Failed to get services": error.Error(err)})
+		return
 	}
 
 	g.JSON(http.StatusOK, services)
+}
+
+// @Summary Get service
+// @Schemes
+// @Description Get service
+// @Tags Company,Service
+// @Accept json
+// @Produce json
+// @Param service_id path int true "service id"
+// @Router /company/service/{service_id} [GET]
+func (ep *Endpoints) GetService(g *gin.Context) {
+	service_id, err := strconv.Atoi(g.Param("service_id"))
+
+	if err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})
+		return
+	}
+
+	service, err := ep.store.Service().FindById(service_id)
+	if err != nil{
+		g.JSON(http.StatusNotFound, gin.H{"Failed to get service": error.Error(err)})
+		return
+	}
+
+	g.JSON(http.StatusOK, dtos.ModelServiceToResponse(service))
+
 }
 
 // @Summary Delete services
@@ -103,7 +137,7 @@ func (ep *Endpoints) GetServices(g *gin.Context) {
 // @Produce json
 // @Param service_id path int true "service id"
 // @Param company_id path int true "company id"
-// @Router /company/{company_id}/service/{service_id} [GET]
+// @Router /company/{company_id}/service/{service_id} [DELETE]
 func (ep *Endpoints) DeleteService(g *gin.Context) {
 	tokenString := g.GetHeader("token")
 	if tokenString == "" {

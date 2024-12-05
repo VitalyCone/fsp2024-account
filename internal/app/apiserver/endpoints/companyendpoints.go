@@ -55,23 +55,23 @@ func (ep *Endpoints) PostCompany(g *gin.Context) {
 	companyModel := createCompanyDto.ToModel()
 
     if err := ep.store.Company().Create(&companyModel ,username, dtos.MembersParticipantTable, dtos.ModeratorsParticipantTable); err != nil{
-        g.JSON(http.StatusBadRequest, gin.H{"Failed to create company": err.Error()})
+        g.JSON(http.StatusInternalServerError, gin.H{"Failed to create company": err.Error()})
         return
     }
 
-    g.JSON(http.StatusCreated, companyModel)
+    g.JSON(http.StatusCreated, dtos.ModelToCreateCompanyResponse(companyModel))
 }
 
-// @Summary Create company
+// @Summary Get company
 // @Schemes
-// @Description Create company
+// @Description Get company
 // @Tags Company
 // @Accept json
 // @Produce json
-// @Param id path int true "company id"
-// @Router /company/{id} [GET]
+// @Param company_id path int true "company id"
+// @Router /company/{company_id} [GET]
 func (ep *Endpoints) GetCompany(g *gin.Context) {
-	id, err := strconv.Atoi(g.Param("id"))
+	id, err := strconv.Atoi(g.Param("company_id"))
 	if err != nil {
 		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})
 		return
@@ -80,9 +80,46 @@ func (ep *Endpoints) GetCompany(g *gin.Context) {
     companyModel, err := ep.store.Company().FindById(
         id, dtos.MembersParticipantTable, dtos.ModeratorsParticipantTable, dtos.ReviewCompaniesTable)
     if err != nil{
-        g.JSON(http.StatusBadRequest, gin.H{"Failed to get company": err.Error()})
+        g.JSON(http.StatusNotFound, gin.H{"Failed to get company": err.Error()})
         return
     }
 
-    g.JSON(http.StatusOK, companyModel)
+    g.JSON(http.StatusOK, dtos.ModelToCreateCompanyResponse(companyModel))
+}
+
+// @Summary Get companies
+// @Schemes
+// @Description Get companies
+// @Tags Company
+// @Accept json
+// @Produce json
+// @Router /companies [GET]
+func (ep *Endpoints) GetCompanies(g *gin.Context) {
+    companyResponse, err := ep.store.Company().FindAllToCreateCompanyResponse()
+    if err != nil{
+        g.JSON(http.StatusNotFound, gin.H{"Failed to get companies": err.Error()})
+        return
+    }
+
+    g.JSON(http.StatusOK, companyResponse)
+}
+
+// @Summary Delete company
+// @Schemes
+// @Description Delete company
+// @Tags Company
+// @Accept json
+// @Produce json
+// @Param company_id path int true "company id"
+// @Router /company/{company_id} [DELETE]
+func (ep *Endpoints) DeleteCompany(g *gin.Context) {
+	id, err := strconv.Atoi(g.Param("company_id"))
+	if err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})
+		return
+	}
+
+    ep.store.Company().DeleteById(id)
+
+    g.JSON(http.StatusNoContent, http.NoBody)
 }

@@ -2,7 +2,9 @@ definitions:
   dtos.CreateCompanyDto:
     properties:
       avatar:
-        type: string
+        items:
+          type: integer
+        type: array
       description:
         type: string
       name:
@@ -14,46 +16,32 @@ definitions:
     type: object
   dtos.CreateReviewCompanyDto:
     properties:
-      creator_username:
-        type: string
       header:
         type: string
       rating:
         maximum: 5
         minimum: 1
         type: integer
-      service_id:
-        type: integer
       text:
         type: string
     required:
-    - creator_username
     - rating
-    - service_id
     type: object
   dtos.CreateReviewServiceDto:
     properties:
-      creator_username:
-        type: string
       header:
         type: string
       rating:
         maximum: 5
         minimum: 1
         type: integer
-      service_id:
-        type: integer
       text:
         type: string
     required:
-    - creator_username
     - rating
-    - service_id
     type: object
   dtos.CreateServiceDto:
     properties:
-      company_id:
-        type: integer
       price:
         type: number
       service_type_id:
@@ -61,7 +49,6 @@ definitions:
       text:
         type: string
     required:
-    - company_id
     - price
     - service_type_id
     - text
@@ -236,6 +223,17 @@ paths:
       summary: Register for user
       tags:
       - Authorization
+  /companies:
+    get:
+      consumes:
+      - application/json
+      description: Get companies
+      produces:
+      - application/json
+      responses: {}
+      summary: Get companies
+      tags:
+      - Company
   /company:
     post:
       consumes:
@@ -256,8 +254,111 @@ paths:
       summary: Create company
       tags:
       - Company
-  /company/{company_id}/service/{service_id}:
+  /company/{company_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete company
+      parameters:
+      - description: company id
+        in: path
+        name: company_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete company
+      tags:
+      - Company
     get:
+      consumes:
+      - application/json
+      description: Get company
+      parameters:
+      - description: company id
+        in: path
+        name: company_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get company
+      tags:
+      - Company
+  /company/{company_id}/review:
+    post:
+      consumes:
+      - application/json
+      description: Create company review
+      parameters:
+      - description: company id
+        in: path
+        name: company_id
+        required: true
+        type: integer
+      - description: Create company review
+        in: body
+        name: review
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateReviewCompanyDto'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Create company review
+      tags:
+      - Review
+      - Company
+  /company/{company_id}/reviews:
+    get:
+      consumes:
+      - application/json
+      description: Get company reviews
+      parameters:
+      - description: company id
+        in: path
+        name: company_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get company reviews
+      tags:
+      - Review
+      - Company
+  /company/{company_id}/service:
+    post:
+      consumes:
+      - application/json
+      description: Create service
+      parameters:
+      - description: company id
+        in: path
+        name: company_id
+        required: true
+        type: integer
+      - description: Create service dto
+        in: body
+        name: serviceDto
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateServiceDto'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Create service
+      tags:
+      - Company
+      - Service
+  /company/{company_id}/service/{service_id}:
+    delete:
       consumes:
       - application/json
       description: Delete services
@@ -281,32 +382,15 @@ paths:
       tags:
       - Company
       - Service
-  /company/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Create company
-      parameters:
-      - description: company id
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses: {}
-      summary: Create company
-      tags:
-      - Company
-  /company/{id}/services:
+  /company/{company_id}/services:
     get:
       consumes:
       - application/json
       description: Get services
       parameters:
-      - description: service id
+      - description: company id
         in: path
-        name: id
+        name: company_id
         required: true
         type: integer
       produces:
@@ -316,26 +400,7 @@ paths:
       tags:
       - Company
       - Service
-  /company/review:
-    post:
-      consumes:
-      - application/json
-      description: Create company review
-      parameters:
-      - description: Create company review
-        in: body
-        name: review
-        required: true
-        schema:
-          $ref: '#/definitions/dtos.CreateReviewCompanyDto'
-      produces:
-      - application/json
-      responses: {}
-      summary: Create company review
-      tags:
-      - Review
-      - Company
-  /company/review/{id}:
+  /company/review/{review_id}:
     delete:
       consumes:
       - application/json
@@ -343,7 +408,7 @@ paths:
       parameters:
       - description: company id
         in: path
-        name: id
+        name: review_id
         required: true
         type: integer
       produces:
@@ -360,7 +425,7 @@ paths:
       parameters:
       - description: review id
         in: path
-        name: id
+        name: review_id
         required: true
         type: integer
       produces:
@@ -370,50 +435,35 @@ paths:
       tags:
       - Review
       - Company
-  /company/reviews/{id}:
+  /company/service/{service_id}:
     get:
       consumes:
       - application/json
-      description: Get company reviews
+      description: Get service
       parameters:
-      - description: company id
+      - description: service id
         in: path
-        name: id
+        name: service_id
         required: true
         type: integer
       produces:
       - application/json
       responses: {}
-      summary: Get company reviews
+      summary: Get service
       tags:
-      - Review
       - Company
-  /service:
-    post:
-      consumes:
-      - application/json
-      description: Create service
-      parameters:
-      - description: Create service dto
-        in: body
-        name: serviceDto
-        required: true
-        schema:
-          $ref: '#/definitions/dtos.CreateServiceDto'
-      produces:
-      - application/json
-      responses: {}
-      security:
-      - ApiKeyAuth: []
-      summary: Create service
-      tags:
       - Service
-  /service/review:
+  /company/service/{service_id}/review:
     post:
       consumes:
       - application/json
       description: Create service review
       parameters:
+      - description: service id
+        in: path
+        name: service_id
+        required: true
+        type: integer
       - description: Create service review
         in: body
         name: review
@@ -423,19 +473,39 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - ApiKeyAuth: []
       summary: Create service review
       tags:
       - Review
       - Service
-  /service/review/{id}:
+  /service/{service_id}/reviews:
+    get:
+      consumes:
+      - application/json
+      description: Get service reviews
+      parameters:
+      - description: service id
+        in: path
+        name: service_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get service reviews
+      tags:
+      - Review
+      - Service
+  /service/review/{review_id}:
     delete:
       consumes:
       - application/json
       description: Delete service reviews
       parameters:
-      - description: id
+      - description: review id
         in: path
-        name: id
+        name: review_id
         required: true
         type: integer
       produces:
@@ -452,31 +522,13 @@ paths:
       parameters:
       - description: review id
         in: path
-        name: id
+        name: review_id
         required: true
         type: integer
       produces:
       - application/json
       responses: {}
       summary: Get service review
-      tags:
-      - Review
-      - Service
-  /service/reviews/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Get service reviews
-      parameters:
-      - description: service id
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses: {}
-      summary: Get service reviews
       tags:
       - Review
       - Service

@@ -3,6 +3,7 @@ package store
 import (
 	"errors"
 
+	"github.com/VitalyCone/account/internal/app/apiserver/dtos"
 	"github.com/VitalyCone/account/internal/app/model"
 )
 
@@ -18,7 +19,7 @@ func (r *CompanyRepository) Create(m *model.Company, creatorUsername, membersPar
 	// 	&m.ID, &m.CreatedAt, &m.UpdatedAt); err != nil {
 	// 	return err
 	// }
-	//Такая ситация, я в company repository (create) создаю данные в разных бд, можно ли как-то сделать так чтобы все данные создавались в рамках одной транзакции? Чтобы все создавалось безопасно, тоесть если что-то не создалось, то и все остальное не создалось
+	
 	participants := make([]model.Participant, 0)
 
 	tx, err := r.store.db.Begin()
@@ -33,7 +34,6 @@ func (r *CompanyRepository) Create(m *model.Company, creatorUsername, membersPar
 	if err != nil{
 		return errors.New("company: " + err.Error())
 	}
-	defer stmt.Close()
 
 	stmt.QueryRow(m.Avatar, m.Name, m.Description).Scan(&m.ID, &m.CreatedAt, &m.UpdatedAt)
 	
@@ -47,19 +47,19 @@ func (r *CompanyRepository) Create(m *model.Company, creatorUsername, membersPar
 	if err1 != nil || err2 != nil {
 		return errors.New("participant: " + errors.Join(err1, err2).Error())
 	}
-
-	users, err := r.store.User().FindUsersByParticipants(participants)
-	if err != nil{
-		return errors.New("users: " + err.Error())
-	}
-
-	m.Members, m.Moderators = users, users
-
-	m.Reviews = make([]model.Review, 0)
-
 	if err := tx.Commit(); err != nil {
 		return err
 	}
+	stmt.Close()
+
+	// users, err := r.store.User().FindUsersByParticipants(participants)
+	// if err != nil{
+	// 	return errors.New("users: " + err.Error())
+	// }
+
+	// m.Members, m.Moderators = users, users
+
+	// m.Reviews = make([]model.Review, 0)
 
 	return nil
 }
@@ -89,6 +89,32 @@ func (r *CompanyRepository) FindAll() ([]model.Company, error) {
 	return companies, nil
 }
 
+func (r *CompanyRepository) FindAllToCreateCompanyResponse() ([]dtos.CreateCompanyResponse, error) {
+	companies :=  make([]dtos.CreateCompanyResponse, 0)
+
+	rows, err := r.store.db.Query(
+		"SELECT id,avatar,name,description,created_at,updated_at FROM companies")
+	if err != nil{
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next(){
+		var company model.Company
+
+		err := rows.Scan(
+			&company.ID, &company.Avatar, &company.Name, &company.Description, &company.CreatedAt, &company.UpdatedAt)
+		if err != nil{
+			return nil, err
+		}
+
+		companies = append(companies, dtos.ModelToCreateCompanyResponse(company))
+	}
+
+	return companies, nil
+}
+
+
 func (r *CompanyRepository) FindById(id int, membersParticipantTable, moderatorsParticipantTable, reviewsTable string) (model.Company, error) {
 	var company model.Company
 
@@ -99,22 +125,22 @@ func (r *CompanyRepository) FindById(id int, membersParticipantTable, moderators
 		&company.Avatar, &company.Name, &company.Description, &company.CreatedAt, &company.UpdatedAt); err != nil {
 		return model.Company{}, err
 	}
-	members, _ := r.store.Participant().FindByCompanyId(company.ID, membersParticipantTable)
-	membersUsers, err := r.store.User().FindUsersByParticipants(members)
-	if err != nil{
-		return model.Company{}, err
-	}
-	moderators, _ := r.store.Participant().FindByCompanyId(company.ID, moderatorsParticipantTable)
-	moderatorsUsers, err := r.store.User().FindUsersByParticipants(moderators)
-	if err != nil{
-		return model.Company{}, err
-	}
+	// members, _ := r.store.Participant().FindByCompanyId(company.ID, membersParticipantTable)
+	// membersUsers, err := r.store.User().FindUsersByParticipants(members)
+	// if err != nil{
+	// 	return model.Company{}, err
+	// }
+	// moderators, _ := r.store.Participant().FindByCompanyId(company.ID, moderatorsParticipantTable)
+	// moderatorsUsers, err := r.store.User().FindUsersByParticipants(moderators)
+	// if err != nil{
+	// 	return model.Company{}, err
+	// }
 
-	reviews, err := r.store.Review().FindAllByObjectId(reviewsTable, company.ID)
-	if err != nil{
-		return model.Company{}, err
-	}
-	company.Moderators, company.Members, company.Reviews = moderatorsUsers, membersUsers, reviews
+	// reviews, err := r.store.Review().FindAllByObjectId(reviewsTable, company.ID)
+	// if err != nil{
+	// 	return model.Company{}, err
+	// }
+	// company.Moderators, company.Members, company.Reviews = moderatorsUsers, membersUsers, reviews
 
 	return company, nil
 }

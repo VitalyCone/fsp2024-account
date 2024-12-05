@@ -141,6 +141,22 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/companies": {
+            "get": {
+                "description": "Get companies",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Get companies",
+                "responses": {}
+            }
+        },
         "/company": {
             "post": {
                 "security": [
@@ -173,35 +189,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/company/review": {
-            "post": {
-                "description": "Create company review",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Review",
-                    "Company"
-                ],
-                "summary": "Create company review",
-                "parameters": [
-                    {
-                        "description": "Create company review",
-                        "name": "review",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dtos.CreateReviewCompanyDto"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/company/review/{id}": {
+        "/company/review/{review_id}": {
             "get": {
                 "description": "Get company review",
                 "consumes": [
@@ -219,7 +207,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "review id",
-                        "name": "id",
+                        "name": "review_id",
                         "in": "path",
                         "required": true
                     }
@@ -243,7 +231,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "company id",
-                        "name": "id",
+                        "name": "review_id",
                         "in": "path",
                         "required": true
                     }
@@ -251,7 +239,161 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/company/reviews/{id}": {
+        "/company/service/{service_id}": {
+            "get": {
+                "description": "Get service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company",
+                    "Service"
+                ],
+                "summary": "Get service",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "service id",
+                        "name": "service_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/company/service/{service_id}/review": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create service review",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review",
+                    "Service"
+                ],
+                "summary": "Create service review",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "service id",
+                        "name": "service_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create service review",
+                        "name": "review",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.CreateReviewServiceDto"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/company/{company_id}": {
+            "get": {
+                "description": "Get company",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Get company",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "company id",
+                        "name": "company_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "delete": {
+                "description": "Delete company",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Delete company",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "company id",
+                        "name": "company_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/company/{company_id}/review": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create company review",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review",
+                    "Company"
+                ],
+                "summary": "Create company review",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "company id",
+                        "name": "company_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create company review",
+                        "name": "review",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.CreateReviewCompanyDto"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/company/{company_id}/reviews": {
             "get": {
                 "description": "Get company reviews",
                 "consumes": [
@@ -269,7 +411,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "company id",
-                        "name": "id",
+                        "name": "company_id",
                         "in": "path",
                         "required": true
                     }
@@ -277,8 +419,48 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/company/{company_id}/service": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company",
+                    "Service"
+                ],
+                "summary": "Create service",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "company id",
+                        "name": "company_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create service dto",
+                        "name": "serviceDto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.CreateServiceDto"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/company/{company_id}/service/{service_id}": {
-            "get": {
+            "delete": {
                 "security": [
                     {
                         "ApiKeyAuth": []
@@ -315,32 +497,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/company/{id}": {
-            "get": {
-                "description": "Create company",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Company"
-                ],
-                "summary": "Create company",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "company id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/company/{id}/services": {
+        "/company/{company_id}/services": {
             "get": {
                 "description": "Get services",
                 "consumes": [
@@ -357,8 +514,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "service id",
-                        "name": "id",
+                        "description": "company id",
+                        "name": "company_id",
                         "in": "path",
                         "required": true
                     }
@@ -366,67 +523,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/service": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Create service",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Service"
-                ],
-                "summary": "Create service",
-                "parameters": [
-                    {
-                        "description": "Create service dto",
-                        "name": "serviceDto",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dtos.CreateServiceDto"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/service/review": {
-            "post": {
-                "description": "Create service review",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Review",
-                    "Service"
-                ],
-                "summary": "Create service review",
-                "parameters": [
-                    {
-                        "description": "Create service review",
-                        "name": "review",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dtos.CreateReviewServiceDto"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/service/review/{id}": {
+        "/service/review/{review_id}": {
             "get": {
                 "description": "Get service review",
                 "consumes": [
@@ -444,7 +541,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "review id",
-                        "name": "id",
+                        "name": "review_id",
                         "in": "path",
                         "required": true
                     }
@@ -467,8 +564,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "id",
-                        "name": "id",
+                        "description": "review id",
+                        "name": "review_id",
                         "in": "path",
                         "required": true
                     }
@@ -476,7 +573,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/service/reviews/{id}": {
+        "/service/{service_id}/reviews": {
             "get": {
                 "description": "Get service reviews",
                 "consumes": [
@@ -494,7 +591,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "service id",
-                        "name": "id",
+                        "name": "service_id",
                         "in": "path",
                         "required": true
                     }
@@ -752,7 +849,10 @@ const docTemplate = `{
             ],
             "properties": {
                 "avatar": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "description": {
                     "type": "string"
@@ -767,14 +867,9 @@ const docTemplate = `{
         "dtos.CreateReviewCompanyDto": {
             "type": "object",
             "required": [
-                "creator_username",
-                "rating",
-                "service_id"
+                "rating"
             ],
             "properties": {
-                "creator_username": {
-                    "type": "string"
-                },
                 "header": {
                     "type": "string"
                 },
@@ -782,9 +877,6 @@ const docTemplate = `{
                     "type": "integer",
                     "maximum": 5,
                     "minimum": 1
-                },
-                "service_id": {
-                    "type": "integer"
                 },
                 "text": {
                     "type": "string"
@@ -794,14 +886,9 @@ const docTemplate = `{
         "dtos.CreateReviewServiceDto": {
             "type": "object",
             "required": [
-                "creator_username",
-                "rating",
-                "service_id"
+                "rating"
             ],
             "properties": {
-                "creator_username": {
-                    "type": "string"
-                },
                 "header": {
                     "type": "string"
                 },
@@ -809,9 +896,6 @@ const docTemplate = `{
                     "type": "integer",
                     "maximum": 5,
                     "minimum": 1
-                },
-                "service_id": {
-                    "type": "integer"
                 },
                 "text": {
                     "type": "string"
@@ -821,15 +905,11 @@ const docTemplate = `{
         "dtos.CreateServiceDto": {
             "type": "object",
             "required": [
-                "company_id",
                 "price",
                 "service_type_id",
                 "text"
             ],
             "properties": {
-                "company_id": {
-                    "type": "integer"
-                },
                 "price": {
                     "type": "number"
                 },
