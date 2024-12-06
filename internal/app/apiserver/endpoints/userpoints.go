@@ -192,7 +192,7 @@ func (ep *Endpoints) GetUserInfo(g *gin.Context){
         g.JSON(http.StatusNotFound, "User not found")
         return
     }
-    g.JSON(http.StatusOK, user)
+    g.JSON(http.StatusOK, dtos.UserToResponse(user))
 }
 
 // @Summary Get users data
@@ -203,7 +203,7 @@ func (ep *Endpoints) GetUserInfo(g *gin.Context){
 // @Produce json
 // @Router /users [GET]
 func (ep *Endpoints) GetUsers(g *gin.Context){
-    users, err := ep.store.User().FindAll()
+    users, err := ep.store.User().FindAllToResponse()
     if err != nil{
         g.JSON(http.StatusNotFound, "Users not found")
         return
@@ -234,7 +234,7 @@ func (ep *Endpoints) GetUser(g *gin.Context){
         return
     }
 
-    g.JSON(http.StatusOK, user)
+    g.JSON(http.StatusOK, dtos.UserToResponse(user))
 }
 
 // @Summary Get user token data
@@ -314,9 +314,9 @@ func (ep *Endpoints) PutUserInfo(g *gin.Context){
         userModel.SecondName = userDto.SecondName
     }
 
-    if userDto.Avatar != ""{
+    if len(userDto.Avatar) > 0{
         // Тут бы добавить проверку на валидность изображения
-        userModel.Avatar = []byte(userDto.Avatar)
+        userModel.Avatar = userDto.Avatar
     }
 
     if userDto.Username != ""{

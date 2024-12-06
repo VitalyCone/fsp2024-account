@@ -71,21 +71,6 @@ func (s *APIServer) configureEndpoints() {
 		path.POST("/servicetype", endpoint.PostServiceType)
 		path.DELETE("/servicetype/:id", endpoint.DeleteServiceType)
 
-		// path.POST("/company", endpoint.PostCompany)
-		// path.GET("/company/:id", endpoint.GetCompany)
-		// path.GET("/company/:id/services", endpoint.GetServices)
-		// path.DELETE("/company/:company_id/service/:service_id", endpoint.DeleteService)
-		// path.GET("/companies/reviews/:id", endpoint.GetCompanyReviews)
-		// path.GET("/companies/review/:id", endpoint.GetCompanyReview)
-		// path.POST("/companies/review", endpoint.PostCompanyReview)
-		// path.DELETE("/companies/review/:id", endpoint.DeleteCompanyReview)
-
-		// path.GET("/service", endpoint.PostService)
-		// path.GET("/service/reviews/:id", endpoint.GetServiceReviews)
-		// path.GET("/service/review/:id", endpoint.GetServiceReview)
-		// path.POST("/service/review", endpoint.PostServiceReview)
-		// path.DELETE("/service/review/:id", endpoint.DeleteServiceReview)
-
 		path.GET("/companies", endpoint.GetCompanies)
 		company := path.Group("/company")
 		{
@@ -101,6 +86,13 @@ func (s *APIServer) configureEndpoints() {
 			company.GET("/service/:service_id/reviews", endpoint.GetServiceReviews)
 			company.GET("/service/review/:review_id", endpoint.GetServiceReview)
 			company.DELETE("/:company_id/service/:service_id/review/:id", endpoint.DeleteServiceReview)
+
+			company.POST("/:company_id/member" , endpoint.PostCompanyMember)
+			company.GET("/:company_id/members",endpoint.GetCompanyMembers)
+			company.DELETE("/:company_id/member/:username", endpoint.DeleteCompanyMember)
+			company.POST("/:company_id/moderator", endpoint.PostCompanyModerator)
+			company.GET("/:company_id/moderators", endpoint.GetCompanyModerators)
+			company.DELETE("/:company_id/moderator/:username", endpoint.DeleteCompanyModerator)
 
 			company.POST("/:company_id/review", endpoint.PostCompanyReview)
 			company.GET("/:company_id/reviews", endpoint.GetCompanyReviews)

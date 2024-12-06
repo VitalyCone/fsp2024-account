@@ -345,6 +345,208 @@
                 "responses": {}
             }
         },
+        "/company/{company_id}/member": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Post company member",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Post company member",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "company id",
+                        "name": "company_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create participant dto",
+                        "name": "participant",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.CreateParticipantDto"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/company/{company_id}/member/{username}": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete company member",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Delete company member",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "company id",
+                        "name": "company_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "username",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/company/{company_id}/members": {
+            "get": {
+                "description": "Get company members",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Get company members",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "company id",
+                        "name": "company_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/company/{company_id}/moderator": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Post company moderator",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Post company moderator",
+                "parameters": [
+                    {
+                        "description": "Create participant dto",
+                        "name": "participant",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.CreateParticipantDto"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "company id",
+                        "name": "company_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/company/{company_id}/moderator/{username}": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete company moderators",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Delete company moderators",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "company id",
+                        "name": "company_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "username",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/company/{company_id}/moderators": {
+            "get": {
+                "description": "Get company moderators",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Get company moderators",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "company id",
+                        "name": "company_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/company/{company_id}/review": {
             "post": {
                 "security": [
@@ -856,6 +1058,17 @@
                 }
             }
         },
+        "dtos.CreateParticipantDto": {
+            "type": "object",
+            "required": [
+                "username"
+            ],
+            "properties": {
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "dtos.CreateReviewCompanyDto": {
             "type": "object",
             "required": [
@@ -979,16 +1192,12 @@
         },
         "dtos.ModifyUserDto": {
             "type": "object",
-            "required": [
-                "first_name",
-                "new_password",
-                "old_password",
-                "second_name",
-                "username"
-            ],
             "properties": {
                 "avatar": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "first_name": {
                     "type": "string",

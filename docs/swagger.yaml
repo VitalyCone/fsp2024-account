@@ -14,6 +14,13 @@ definitions:
     required:
     - name
     type: object
+  dtos.CreateParticipantDto:
+    properties:
+      username:
+        type: string
+    required:
+    - username
+    type: object
   dtos.CreateReviewCompanyDto:
     properties:
       header:
@@ -103,7 +110,9 @@ definitions:
   dtos.ModifyUserDto:
     properties:
       avatar:
-        type: string
+        items:
+          type: integer
+        type: array
       first_name:
         maxLength: 50
         type: string
@@ -122,12 +131,6 @@ definitions:
         maxLength: 32
         minLength: 3
         type: string
-    required:
-    - first_name
-    - new_password
-    - old_password
-    - second_name
-    - username
     type: object
   dtos.UserDto:
     properties:
@@ -285,6 +288,138 @@ paths:
       - application/json
       responses: {}
       summary: Get company
+      tags:
+      - Company
+  /company/{company_id}/member:
+    post:
+      consumes:
+      - application/json
+      description: Post company member
+      parameters:
+      - description: company id
+        in: path
+        name: company_id
+        required: true
+        type: integer
+      - description: Create participant dto
+        in: body
+        name: participant
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateParticipantDto'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Post company member
+      tags:
+      - Company
+  /company/{company_id}/member/{username}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete company member
+      parameters:
+      - description: company id
+        in: path
+        name: company_id
+        required: true
+        type: integer
+      - description: username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Delete company member
+      tags:
+      - Company
+  /company/{company_id}/members:
+    get:
+      consumes:
+      - application/json
+      description: Get company members
+      parameters:
+      - description: company id
+        in: path
+        name: company_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get company members
+      tags:
+      - Company
+  /company/{company_id}/moderator:
+    post:
+      consumes:
+      - application/json
+      description: Post company moderator
+      parameters:
+      - description: Create participant dto
+        in: body
+        name: participant
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateParticipantDto'
+      - description: company id
+        in: path
+        name: company_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Post company moderator
+      tags:
+      - Company
+  /company/{company_id}/moderator/{username}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete company moderators
+      parameters:
+      - description: company id
+        in: path
+        name: company_id
+        required: true
+        type: integer
+      - description: username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Delete company moderators
+      tags:
+      - Company
+  /company/{company_id}/moderators:
+    get:
+      consumes:
+      - application/json
+      description: Get company moderators
+      parameters:
+      - description: company id
+        in: path
+        name: company_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get company moderators
       tags:
       - Company
   /company/{company_id}/review:
