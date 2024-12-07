@@ -9,6 +9,37 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+// @Summary Get all services
+// @Schemes
+// @Description Get all services
+// @Tags Company,Service
+// @Accept json
+// @Produce json
+// @Param tags query []string false "Filter by tags" collectionFormat(multi)
+// @Param rating query string false "Filter by rating"
+// @Param min_price query string false "Minimum price"
+// @Param max_price query string false "Maximum price"
+// @Router /services [GET]
+func (ep *Endpoints) GetAllServices(g *gin.Context) {
+    tags := g.QueryArray("tags") // Получаем массив тегов
+    rating := g.Query("rating")
+    minPrice := g.Query("min_price")
+    maxPrice := g.Query("max_price")
+
+    services, err := ep.store.Service().FindAll(tags, rating, minPrice, maxPrice)
+    if err != nil {
+        g.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    responseServices := make([]dtos.ServiceResponse, 0)
+    for _, service := range services {
+        responseServices = append(responseServices, dtos.ModelServiceToResponse(service))
+    }
+
+    g.JSON(http.StatusOK, responseServices)
+}
+
 // @Summary Create service
 // @Schemes
 // @Description Create service

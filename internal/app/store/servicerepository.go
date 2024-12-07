@@ -1,6 +1,8 @@
 package store
 
 import (
+	"fmt"
+
 	"github.com/VitalyCone/account/internal/app/apiserver/dtos"
 	"github.com/VitalyCone/account/internal/app/model"
 )
@@ -47,11 +49,74 @@ func (r *ServiceRepository) Create(m *model.Service) error {
 	return nil
 }
 
+func (r *ServiceRepository) FindAll(tags []string, rating string, minPrice string, maxPrice string) ([]model.Service, error) {
+	services := make([]model.Service, 0)
+
+	query := "SELECT s.id, s.company_id, st.id, st.name, s.text, s.price, s.created_at, s.updated_at" +
+		"FROM services s " +
+		"JOIN service_types st ON s.service_type_id = st.id " +
+		"WHERE 1=1"
+
+	var args []interface{}
+
+	if len(tags) > 0 {
+		query += " AND EXISTS (SELECT 1 FROM tags_services ts WHERE ts.service_id = s.id AND ts.tag_id IN ("
+		for i, tag := range tags {
+			if i > 0 {
+				query += ","
+			}
+			query += fmt.Sprintf("$%d", i+1) // Используем параметризацию для защиты от SQL-инъекций
+			args = append(args, tag)
+		}
+		query += "))"
+	}
+
+	if rating != "" {
+		query += " AND s.rating = $" + fmt.Sprintf("%d", len(args)+1)
+		args = append(args, rating)
+	}
+
+	if minPrice != "" {
+		query += " AND s.price >= $" + fmt.Sprintf("%d", len(args)+1)
+		args = append(args, minPrice)
+	}
+
+	if maxPrice != "" {
+		query += " AND s.price <= $" + fmt.Sprintf("%d", len(args)+1)
+		args = append(args, maxPrice)
+	}
+
+	rows, err := r.store.db.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var service model.Service
+
+		err := rows.Scan(
+			&service.ID, &service.Company.ID, &service.ServiceType.ID, &service.ServiceType.Name,
+			&service.Text, &service.Price, &service.CreatedAt, &service.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		// Получение тегов для сервиса
+		tagObj, _ := r.store.Tag().FindByObjectIdForObject(service.ID, tagsTableService)
+		service.Tags, _ = r.store.Tag().TagObjToTag(tagObj)
+
+		services = append(services, service)
+	}
+
+	return services, nil
+}
+
 func (r *ServiceRepository) FindByCompanyId(id int) ([]model.Service, error) {
 	services := make([]model.Service, 0)
 
 	rows, err := r.store.db.Query(
-		"SELECT s.id, s.company_id, st.id, st.name, s.text, s.price, s.created_at, s.updated_at "+
+		"SELECT s.id, s.company_id, st.id, st.name, s.text, s.price, s.created_at, s.updated_at, s.rating "+
 		"FROM services s " +
 		"JOIN service_types st ON s.service_type_id = st.id "+
 		"WHERE s.company_id = $1", id)
@@ -65,7 +130,7 @@ func (r *ServiceRepository) FindByCompanyId(id int) ([]model.Service, error) {
 
 		err := rows.Scan(
 			&service.ID, &service.Company.ID, &service.ServiceType.ID, &service.ServiceType.Name,  &service.Text,
-			&service.Price, &service.CreatedAt, &service.UpdatedAt)
+			&service.Price, &service.CreatedAt, &service.UpdatedAt, &service.Rating)
 		if err != nil {
 			return nil, err
 		}
@@ -83,7 +148,7 @@ func (r *ServiceRepository) FindByCompanyIdToResponse(id int) ([]dtos.ServiceRes
 	services := make([]dtos.ServiceResponse, 0)
 
 	rows, err := r.store.db.Query(
-		"SELECT s.id, s.company_id, st.id, st.name, s.text, s.price, s.created_at, s.updated_at "+
+		"SELECT s.id, s.company_id, st.id, st.name, s.text, s.price, s.created_at, s.updated_at, s.rating "+
 		"FROM services s " +
 		"JOIN service_types st ON s.service_type_id = st.id "+
 		"WHERE s.company_id = $1", id)
@@ -97,7 +162,7 @@ func (r *ServiceRepository) FindByCompanyIdToResponse(id int) ([]dtos.ServiceRes
 
 		err := rows.Scan(
 			&service.ID, &service.Company.ID, &service.ServiceType.ID, &service.ServiceType.Name, &service.Text,
-			&service.Price, &service.CreatedAt, &service.UpdatedAt)
+			&service.Price, &service.CreatedAt, &service.UpdatedAt, &service.Rating)
 		if err != nil {
 			return nil, err
 		}
@@ -117,12 +182,12 @@ func (r *ServiceRepository) FindById(id int) (model.Service, error) {
 
 
 	if err := r.store.db.QueryRow(
-		"SELECT s.id, s.company_id, st.id, st.name, s.text, s.price, s.created_at, s.updated_at "+
+		"SELECT s.id, s.company_id, st.id, st.name, s.text, s.price, s.created_at, s.updated_at, s.rating "+
 		"FROM services s " +
 		"JOIN service_types st ON s.service_type_id = st.id "+
 		"WHERE s.id = $1",id).Scan(
 		&service.ID, &service.Company.ID, &service.ServiceType.ID, &service.ServiceType.Name,
-		&service.Text, &service.Price, &service.CreatedAt, &service.UpdatedAt); err != nil {
+		&service.Text, &service.Price, &service.CreatedAt, &service.UpdatedAt, &service.Rating); err != nil {
 		return model.Service{}, err
 	}
 

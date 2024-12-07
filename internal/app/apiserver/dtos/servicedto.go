@@ -18,6 +18,7 @@ type ServiceResponse struct {
 	ServiceType model.ServiceType `json:"service_type"`
 	Text        string            `json:"text"`
 	Price       float32           `json:"price"`
+	Rating      float32           `json:"rating"`
 	CreatedAt   time.Time         `json:"created_at"`
 	UpdatedAt   time.Time         `json:"updated_at"`
 	Tags        []model.Tag       `json:"tags"`
@@ -43,6 +44,7 @@ func ModelServiceToResponse(m model.Service) ServiceResponse {
 		CompanyID:   m.Company.ID,
 		ServiceType: m.ServiceType,
 		Text:        m.Text,
+		Rating:      m.Rating,
 		Price:       m.Price,
 		CreatedAt:   m.CreatedAt,
 		UpdatedAt:   m.UpdatedAt,

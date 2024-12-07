@@ -943,6 +943,53 @@
                 "responses": {}
             }
         },
+        "/services": {
+            "get": {
+                "description": "Get all services",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company",
+                    "Service"
+                ],
+                "summary": "Get all services",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "Filter by tags",
+                        "name": "tags",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by rating",
+                        "name": "rating",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Minimum price",
+                        "name": "min_price",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Maximum price",
+                        "name": "max_price",
+                        "in": "query"
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/servicetype": {
             "get": {
                 "description": "Get service types",

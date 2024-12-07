@@ -783,6 +783,38 @@ paths:
       tags:
       - Review
       - Service
+  /services:
+    get:
+      consumes:
+      - application/json
+      description: Get all services
+      parameters:
+      - collectionFormat: multi
+        description: Filter by tags
+        in: query
+        items:
+          type: string
+        name: tags
+        type: array
+      - description: Filter by rating
+        in: query
+        name: rating
+        type: string
+      - description: Minimum price
+        in: query
+        name: min_price
+        type: string
+      - description: Maximum price
+        in: query
+        name: max_price
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get all services
+      tags:
+      - Company
+      - Service
   /servicetype:
     get:
       consumes:

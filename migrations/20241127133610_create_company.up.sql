@@ -3,6 +3,8 @@ CREATE TABLE companies (
     id SERIAL PRIMARY KEY,
     avatar BYTEA,  -- Хранение изображения в формате bytea
     name VARCHAR(100) NOT NULL UNIQUE,  -- Имя компании (не более 100 символов, уникально)
+    reviews_count INTEGER NOT NULL DEFAULT 0,  -- Количество отзывов
+    rating FLOAT8 NOT NULL DEFAULT 0,
     description TEXT,  -- Описание компании
     email VARCHAR(255),  -- Email компании
     phone VARCHAR(50),  -- Телефон компании

@@ -86,7 +86,9 @@ func (s *APIServer) configureEndpoints() {
 		path.POST("/servicetype", endpoint.PostServiceType)
 		path.DELETE("/servicetype/:id", endpoint.DeleteServiceType)
 
+		path.GET("/services", endpoint.GetAllServices)
 		path.GET("/companies", endpoint.GetCompanies)
+
 		company := path.Group("/company")
 		{
 			company.POST("", endpoint.PostCompany)
