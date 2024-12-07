@@ -189,7 +189,7 @@ func (ep *Endpoints) GetUserInfo(g *gin.Context){
     
     user, err := ep.store.User().FindUserByUsername(username)
     if err != nil{
-        g.JSON(http.StatusNotFound, "User not found")
+        g.JSON(http.StatusNotFound, "User not found: " + err.Error())
         return
     }
     g.JSON(http.StatusOK, dtos.UserToResponse(user))
@@ -328,6 +328,10 @@ func (ep *Endpoints) PutUserInfo(g *gin.Context){
     if len(userDto.Avatar) > 0{
         // Тут бы добавить проверку на валидность изображения
         userModel.Avatar = userDto.Avatar
+    }
+
+    if userDto.Balance > 0{
+        userModel.Balance = userDto.Balance
     }
 
     if userDto.Username != ""{

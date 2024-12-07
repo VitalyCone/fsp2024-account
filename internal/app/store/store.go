@@ -16,6 +16,7 @@ type Store struct {
 	companyRepository     *CompanyRepository
 	participantRepository *ParticipantRepository
 	serviceRepository     *ServiceRepository
+	orderRepository *OrderRepository
 }
 
 func NewStore(config *Config) *Store {
@@ -128,4 +129,16 @@ func (s *Store) Service() *ServiceRepository {
 	}
 
 	return s.serviceRepository
+}
+
+func (s *Store) Order() *OrderRepository {
+	if s.orderRepository != nil {
+		return s.orderRepository
+	}
+
+	s.orderRepository = &OrderRepository{
+		store: s,
+	}
+
+	return s.orderRepository
 }

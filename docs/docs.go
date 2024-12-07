@@ -189,6 +189,37 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/company/order/{order_id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get company order",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company",
+                    "Orders"
+                ],
+                "summary": "Get company order",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "order id",
+                        "name": "order_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/company/review/{review_id}": {
             "get": {
                 "description": "Get company review",
@@ -560,6 +591,37 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/company/{company_id}/orders": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get company orders",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company",
+                    "Orders"
+                ],
+                "summary": "Get company orders",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "company id",
+                        "name": "company_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/company/{company_id}/review": {
             "post": {
                 "security": [
@@ -727,6 +789,89 @@ const docTemplate = `{
                         "required": true
                     }
                 ],
+                "responses": {}
+            }
+        },
+        "/order": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Post order",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Post order",
+                "parameters": [
+                    {
+                        "description": "Create order dto",
+                        "name": "order",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.CreateOrderDto"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/order/{order_id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get order",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Get order",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "order id",
+                        "name": "order_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/orders": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get orders",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Get orders",
                 "responses": {}
             }
         },
@@ -1092,6 +1237,20 @@ const docTemplate = `{
                 }
             }
         },
+        "dtos.CreateOrderDto": {
+            "type": "object",
+            "properties": {
+                "company_id": {
+                    "type": "integer"
+                },
+                "service_id": {
+                    "type": "integer"
+                },
+                "will_be_finished_at": {
+                    "type": "string"
+                }
+            }
+        },
         "dtos.CreateParticipantDto": {
             "type": "object",
             "required": [
@@ -1238,6 +1397,9 @@ const docTemplate = `{
                     "items": {
                         "type": "integer"
                     }
+                },
+                "balance": {
+                    "type": "number"
                 },
                 "first_name": {
                     "type": "string"

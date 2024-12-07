@@ -6,6 +6,7 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,       -- Хеш пароля (достаточно длинный для хранения хеша bcrypt)
     first_name VARCHAR(50),                    -- Имя пользователя (не более 50 символов)
     second_name VARCHAR(50),                   -- Фамилия пользователя (не более 50 символов)
+    balance FLOAT NOT NULL DEFAULT 0,          -- Баланс пользователя (по умолчанию 0)
     role VARCHAR(10) NOT NULL DEFAULT 'user',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Дата и время создания записи
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Дата и время последнего обновления

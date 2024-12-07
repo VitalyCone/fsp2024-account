@@ -34,6 +34,7 @@ type ModifyUserDto struct {
 	Avatar      []byte `json:"avatar" form:"avatar"`
 	FirstName   string `json:"first_name" form:"first_name"`
 	SecondName  string `json:"second_name" form:"second_name"`
+	Balance     float32    `json:"balance"`
 }
 
 func (u *ModifyUserDto) ToModel(passHash string) model.User {
@@ -51,6 +52,7 @@ type UserResponse struct {
 	Username   string    `json:"username"`
 	FirstName  string    `json:"first_name"`
 	SecondName string    `json:"second_name"`
+	Balance    float32       `json:"balance"`
 	Role       string    `json:"role"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
@@ -63,6 +65,7 @@ func UserToResponse(m model.User) UserResponse {
 		Username:   m.Username,
 		FirstName:  m.FirstName,
 		SecondName: m.SecondName,
+		Balance:    m.Balance,
 		Role:       m.Role,
 		CreatedAt:  m.CreatedAt,
 		UpdatedAt:  m.UpdatedAt,

@@ -32,7 +32,7 @@ func (r *ReviewRepository) FindAllByObjectId(tableName string, objId int)([]mode
 	//JOIN users u ON r.creator_username = u.username
 	rows, err := r.store.db.Query(
 		fmt.Sprintf("SELECT id, rating, header, text, created_at, updated_at, "+
-			"u.id, u.username, u.first_name, u.secondname, u.role, u.created_at, u.updated_at, u.avatar FROM %s "+
+			"u.id, u.username, u.first_name, u.secondname, u.role, u.created_at, u.updated_at, u.avatar, u.balance FROM %s "+
 			"JOIN users u ON %s.creator_username = u.username " +
 			"WHERE object_id = $1", tableName, tableName),
 		objId)
@@ -49,7 +49,7 @@ func (r *ReviewRepository) FindAllByObjectId(tableName string, objId int)([]mode
 			&review.Text, &review.CreatedAt, &review.UpdatedAt,
 			&review.CreatorUser.ID, &review.CreatorUser.Username, &review.CreatorUser.FirstName,
 			&review.CreatorUser.SecondName, &review.CreatorUser.Role, &review.CreatorUser.CreatedAt,
-			&review.CreatorUser.UpdatedAt, &review.CreatorUser.Avatar)
+			&review.CreatorUser.UpdatedAt, &review.CreatorUser.Avatar, &review.CreatorUser.Balance)
 		if err != nil{
 			return nil, err
 		}
@@ -65,7 +65,7 @@ func (r *ReviewRepository) FindAllByObjectIdToResponse(tableName string, objId i
 	//JOIN users u ON r.creator_username = u.username
 	rows, err := r.store.db.Query(
 		fmt.Sprintf("SELECT s.id, s.rating, s.header, s.text, s.created_at, s.updated_at, "+
-			"u.id, u.username, u.first_name, u.second_name, u.role, u.created_at, u.updated_at, u.avatar FROM %s s "+
+			"u.id, u.username, u.first_name, u.second_name, u.role, u.created_at, u.updated_at, u.avatar, u.balance FROM %s s "+
 			"JOIN users u ON s.creator_username = u.username " +
 			"WHERE object_id = $1", tableName),
 		objId)
@@ -82,7 +82,7 @@ func (r *ReviewRepository) FindAllByObjectIdToResponse(tableName string, objId i
 			&review.Text, &review.CreatedAt, &review.UpdatedAt,
 			&review.CreatorUser.ID, &review.CreatorUser.Username, &review.CreatorUser.FirstName,
 			&review.CreatorUser.SecondName, &review.CreatorUser.Role, &review.CreatorUser.CreatedAt,
-			&review.CreatorUser.UpdatedAt, &review.CreatorUser.Avatar)
+			&review.CreatorUser.UpdatedAt, &review.CreatorUser.Avatar, &review.CreatorUser.Balance)
 		if err != nil{
 			return nil, err
 		}

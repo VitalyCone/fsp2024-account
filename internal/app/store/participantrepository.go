@@ -88,7 +88,7 @@ func (r *ParticipantRepository) FindByCompanyToResponse(id int, tableName string
 	participants := make([]dtos.ParticipantResponse, 0)
 
 	rows, err := r.store.db.Query(
-		fmt.Sprintf("SELECT s.company_id, u.id, u.username, u.first_name, u.second_name, u.role, u.created_at, u.updated_at, u.avatar "+
+		fmt.Sprintf("SELECT s.company_id, u.id, u.username, u.first_name, u.second_name, u.role, u.balance, u.created_at, u.updated_at, u.avatar "+
 			"FROM %s s "+
 			"JOIN users u ON s.username = u.username "+
 			"WHERE s.company_id = $1", tableName),
@@ -108,6 +108,7 @@ func (r *ParticipantRepository) FindByCompanyToResponse(id int, tableName string
 			&participant.User.FirstName,
 			&participant.User.SecondName,
 			&participant.User.Role,
+			&participant.User.Balance,
 			&participant.User.CreatedAt,
 			&participant.User.UpdatedAt,
 			&participant.User.Avatar,

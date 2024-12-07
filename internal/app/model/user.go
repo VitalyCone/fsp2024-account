@@ -10,6 +10,7 @@ type User struct {
 	FirstName    string `json:"first_name"`
 	SecondName   string `json:"second_name"`
 	Role         string `json:"role"`
+	Balance      float32    `json:"balance"`
 	// MemberIn     []Company
 	// ModeratorIn  []Company
 	CreatedAt time.Time `json:"created_at"`

@@ -2,10 +2,12 @@ package apiserver
 
 import (
 	"log"
+	"time"
 
 	"github.com/VitalyCone/account/docs"
 	"github.com/VitalyCone/account/internal/app/apiserver/endpoints"
 	"github.com/VitalyCone/account/internal/app/store"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -34,6 +36,15 @@ func (s *APIServer) Start() error {
 
 	s.configureEndpoints()
 
+	s.router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},                   // Разрешенные источники
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},   // Разрешенные методы
+		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"}, // Разрешенные заголовки
+		ExposeHeaders:    []string{"Content-Length"},                          // Заголовки, которые могут быть доступны клиенту
+		AllowCredentials: true,                                                // Разрешить отправку учетных данных (например, куки)
+		MaxAge:           12 * time.Hour,                                      // Время кэширования preflight-запросов
+	  }))
+
 	if err := s.configureStore(); err != nil {
 		return err
 	}
@@ -58,6 +69,10 @@ func (s *APIServer) configureEndpoints() {
 		path.PUT("/account/info", endpoint.PutUserInfo)
 		path.DELETE("/account/delete", endpoint.DeleteUserInfo)
 
+		path.GET("/orders", endpoint.GetOrders)
+		path.POST("/order", endpoint.PostOrder)
+		path.GET("/order/:order_id", endpoint.GetOrder)
+
 		path.GET("/users", endpoint.GetUsers)
 		path.GET("/users/:username", endpoint.GetUser)
 
@@ -77,6 +92,9 @@ func (s *APIServer) configureEndpoints() {
 			company.POST("", endpoint.PostCompany)
 			company.GET("/:company_id", endpoint.GetCompany)
 			company.DELETE("/:company_id", endpoint.DeleteCompany)
+
+			company.GET("/order/:order_id", endpoint.GetCompanyOrder)
+			company.GET("/:company_id/orders", endpoint.GetCompanyOrders)
 
 			company.POST("/:company_id/service", endpoint.PostService)
 			company.GET("/:company_id/services", endpoint.GetServices)

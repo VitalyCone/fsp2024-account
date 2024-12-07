@@ -29,6 +29,15 @@ definitions:
     - name
     - phone
     type: object
+  dtos.CreateOrderDto:
+    properties:
+      company_id:
+        type: integer
+      service_id:
+        type: integer
+      will_be_finished_at:
+        type: string
+    type: object
   dtos.CreateParticipantDto:
     properties:
       username:
@@ -132,6 +141,8 @@ definitions:
         items:
           type: integer
         type: array
+      balance:
+        type: number
       first_name:
         type: string
       new_password:
@@ -435,6 +446,26 @@ paths:
       summary: Get company moderators
       tags:
       - Company
+  /company/{company_id}/orders:
+    get:
+      consumes:
+      - application/json
+      description: Get company orders
+      parameters:
+      - description: company id
+        in: path
+        name: company_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Get company orders
+      tags:
+      - Company
+      - Orders
   /company/{company_id}/review:
     post:
       consumes:
@@ -548,6 +579,26 @@ paths:
       tags:
       - Company
       - Service
+  /company/order/{order_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get company order
+      parameters:
+      - description: order id
+        in: path
+        name: order_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Get company order
+      tags:
+      - Company
+      - Orders
   /company/review/{review_id}:
     delete:
       consumes:
@@ -627,6 +678,58 @@ paths:
       tags:
       - Review
       - Service
+  /order:
+    post:
+      consumes:
+      - application/json
+      description: Post order
+      parameters:
+      - description: Create order dto
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateOrderDto'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Post order
+      tags:
+      - Orders
+  /order/{order_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get order
+      parameters:
+      - description: order id
+        in: path
+        name: order_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Get order
+      tags:
+      - Orders
+  /orders:
+    get:
+      consumes:
+      - application/json
+      description: Get orders
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Get orders
+      tags:
+      - Orders
   /service/{service_id}/reviews:
     get:
       consumes:
