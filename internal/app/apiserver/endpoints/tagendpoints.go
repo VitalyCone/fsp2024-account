@@ -152,3 +152,61 @@ func (ep *Endpoints) DeleteTag(g *gin.Context){
 
 	g.JSON(http.StatusNoContent, http.NoBody)
 }
+
+/*
+
+
+Service tags
+
+
+*/
+
+
+func (ep *Endpoints) CreateServiceTag(g *gin.Context){
+	//var createParticipantDto dtos.CreateParticipantDto
+
+    tokenString := g.GetHeader("token")
+	if tokenString == "" {
+		g.JSON(http.StatusUnauthorized, "token nil")
+		return
+	}
+
+	token, err := verifyToken(tokenString)
+	if err != nil {
+		g.JSON(http.StatusUnauthorized, "token not verifed or nil")
+		return
+	}
+
+	username, err := token.Claims.GetSubject()
+	if err != nil {
+		g.JSON(http.StatusNotFound, "Failed to get subject from token")
+		return
+	}
+
+	id, err := strconv.Atoi(g.Param("company_id"))
+	if err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})
+		return
+	}
+
+	exist, err := ep.store.Participant().IsParticipant(username, dtos.ModeratorsParticipantTable, id)
+	if err != nil{
+		g.JSON(http.StatusNotFound, "Failed to get permissions")
+		return
+	}
+
+	if !exist{
+		g.JSON(http.StatusForbidden, "You are not allowed to create service")
+		return
+	}
+
+}
+
+
+/*
+
+
+Company tags
+
+
+*/

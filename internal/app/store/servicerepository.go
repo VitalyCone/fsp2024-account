@@ -5,11 +5,15 @@ import (
 	"github.com/VitalyCone/account/internal/app/model"
 )
 
+const tagsTableService = "tags_services"
+
 type ServiceRepository struct {
 	store *Store
 }
 
 func (r *ServiceRepository) Create(m *model.Service) error {
+	tagsObj := make([]model.TagForObject, 0)
+
 	if err := r.store.db.QueryRow(
 		"INSERT INTO services (company_id, service_type_id, text, price) "+
 			"VALUES ($1, $2, $3, $4) RETURNING id, created_at, updated_at",
@@ -17,6 +21,25 @@ func (r *ServiceRepository) Create(m *model.Service) error {
 		&m.ID, &m.CreatedAt, &m.UpdatedAt); err != nil {
 		return err
 	}
+	
+	for _, tag := range m.Tags{
+		tagObj := model.TagForObject{
+			ObjectId: m.ID,
+			Tag: tag,
+		}
+
+		err := r.store.Tag().CreateForObject(&tagObj, tagsTableService)
+		if err != nil{
+			return err
+		}
+		tagsObj = append(tagsObj, tagObj)
+	}
+
+	tags , err := r.store.Tag().TagObjToTag(tagsObj)
+	if err != nil{
+		return err
+	}
+	m.Tags = tags
 
 	servicetype, _ := r.store.ServiceType().FindById(m.ServiceType.ID)
 	m.ServiceType.Name = servicetype.Name
@@ -46,6 +69,10 @@ func (r *ServiceRepository) FindByCompanyId(id int) ([]model.Service, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		tagObj, _ := r.store.Tag().FindByObjectIdForObject(service.ID, tagsTableService)
+		service.Tags, _ =  r.store.Tag().TagObjToTag(tagObj)
+
 		services = append(services, service)
 	}
 
@@ -74,6 +101,10 @@ func (r *ServiceRepository) FindByCompanyIdToResponse(id int) ([]dtos.ServiceRes
 		if err != nil {
 			return nil, err
 		}
+
+		tagObj, _ := r.store.Tag().FindByObjectIdForObject(service.ID, tagsTableService)
+		service.Tags, _ =  r.store.Tag().TagObjToTag(tagObj)
+
 		services = append(services, dtos.ModelServiceToResponse(service))
 	}
 
@@ -94,6 +125,9 @@ func (r *ServiceRepository) FindById(id int) (model.Service, error) {
 		&service.Text, &service.Price, &service.CreatedAt, &service.UpdatedAt); err != nil {
 		return model.Service{}, err
 	}
+
+	tagObj, _ := r.store.Tag().FindByObjectIdForObject(service.ID, tagsTableService)
+	service.Tags, _ =  r.store.Tag().TagObjToTag(tagObj)
 
 	return service, nil
 }

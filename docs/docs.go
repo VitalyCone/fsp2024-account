@@ -1083,6 +1083,12 @@ const docTemplate = `{
                 },
                 "phone": {
                     "type": "string"
+                },
+                "tagsIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },
@@ -1148,6 +1154,12 @@ const docTemplate = `{
                 },
                 "service_type_id": {
                     "type": "integer"
+                },
+                "tagsIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "text": {
                     "type": "string"

@@ -7,11 +7,14 @@ import (
 	"github.com/VitalyCone/account/internal/app/model"
 )
 
+const tagsTable = "tags_companies"
+
 type CompanyRepository struct {
 	store *Store
 }
 
 func (r *CompanyRepository) Create(m *model.Company, creatorUsername, membersParticipantTable, moderatorsParticipantTable string) error{
+	tagsObj := make([]model.TagForObject, 0)
 	
 	participants := make([]model.Participant, 0)
 
@@ -47,19 +50,29 @@ func (r *CompanyRepository) Create(m *model.Company, creatorUsername, membersPar
 	if err1 != nil || err2 != nil {
 		return errors.New("participant: " + errors.Join(err1, err2).Error())
 	}
+	
+	for _, tag := range m.Tags{
+		tagObj := model.TagForObject{
+			ObjectId: m.ID,
+			Tag: tag,
+		}
+
+		err := r.store.Tag().CreateForObjectWithTx(&tagObj, tx , tagsTable)
+		if err != nil{
+			return err
+		}
+		tagsObj = append(tagsObj, tagObj)
+	}
+	m.Tags, err = r.store.Tag().TagObjToTagWithTx(tx, tagsObj)
+	if err != nil{
+		return err
+	}
+
 	if err := tx.Commit(); err != nil {
 		return err
 	}
 	stmt.Close()
 
-	// users, err := r.store.User().FindUsersByParticipants(participants)
-	// if err != nil{
-	// 	return errors.New("users: " + err.Error())
-	// }
-
-	// m.Members, m.Moderators = users, users
-
-	// m.Reviews = make([]model.Review, 0)
 
 	return nil
 }
@@ -91,6 +104,9 @@ func (r *CompanyRepository) FindAll() ([]model.Company, error) {
 		if err != nil{
 			return nil, err
 		}
+
+		tagObj, _ := r.store.Tag().FindByObjectIdForObject(company.ID, tagsTable)
+		company.Tags, _ =  r.store.Tag().TagObjToTag(tagObj)
 
 		companies = append(companies, company)
 	}
@@ -126,8 +142,15 @@ func (r *CompanyRepository) FindAllToCreateCompanyResponse() ([]dtos.CreateCompa
 			return nil, err
 		}
 
+		tagObj, err := r.store.Tag().FindByObjectIdForObject(company.ID, tagsTable)
+		if err != nil{
+			return nil, err
+		}
+		company.Tags, _ =  r.store.Tag().TagObjToTag(tagObj)
+
 		companies = append(companies, dtos.ModelToCreateCompanyResponse(company))
 	}
+
 
 	return companies, nil
 }
@@ -152,6 +175,9 @@ func (r *CompanyRepository) FindById(id int, membersParticipantTable, moderators
 		return model.Company{}, err
 	}
 
+	tagObj, _ := r.store.Tag().FindByObjectIdForObject(company.ID, tagsTable)
+	company.Tags, _ =  r.store.Tag().TagObjToTag(tagObj)
+
 	return company, nil
 }
 
@@ -173,6 +199,9 @@ func (r *CompanyRepository) FindByName(name string) (model.Company, error) {
 		&company.UpdatedAt); err != nil {
 		return model.Company{}, err
 	}
+	tagObj, _ := r.store.Tag().FindByObjectIdForObject(company.ID, tagsTable)
+	company.Tags, _ =  r.store.Tag().TagObjToTag(tagObj)
+
 	return company, nil
 }
 

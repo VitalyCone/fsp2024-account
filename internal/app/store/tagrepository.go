@@ -1,6 +1,7 @@
 package store
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/VitalyCone/account/internal/app/model"
@@ -27,6 +28,19 @@ func (r *TagRepository) FindById(id int) (model.Tag, error){
 
 	m.ID = id
 	if err := r.store.db.QueryRow(
+		"SELECT (name) FROM tags WHERE id = $1",
+		id).Scan(
+		&m.Name); err != nil {
+		return model.Tag{}, err
+	}
+	return m, nil
+}
+
+func (r *TagRepository) FindByIdWithTx(id int, tx *sql.Tx) (model.Tag, error){
+	var m model.Tag
+
+	m.ID = id
+	if err := tx.QueryRow(
 		"SELECT (name) FROM tags WHERE id = $1",
 		id).Scan(
 		&m.Name); err != nil {
@@ -67,7 +81,6 @@ func (r *TagRepository) DeleteById(id int) error{
 	return nil
 }
 
-
 /*
 
 
@@ -78,6 +91,17 @@ Object Tags
 
 func (r *TagRepository) CreateForObject(m *model.TagForObject, tableName string) error{
 	if _, err := r.store.db.Exec(
+		fmt.Sprintf("INSERT INTO %s (tag_id, object_id) "+
+			"VALUES ($1, $2)", tableName),
+		m.Tag.ID, m.ObjectId); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *TagRepository) CreateForObjectWithTx(m *model.TagForObject,tx *sql.Tx, tableName string) error{
+	if _, err := tx.Exec(
 		fmt.Sprintf("INSERT INTO %s (tag_id, object_id) "+
 			"VALUES ($1, $2)", tableName),
 		m.Tag.ID, m.ObjectId); err != nil {
@@ -116,7 +140,17 @@ func (r *TagRepository) FindByObjectIdForObject(id int, tableName string) ([]mod
 	//"VALUES ($1, $2)", tableName),
 	tags := make([]model.TagForObject, 0)
 	//"SELECT (id, name) FROM tags WHERE id = $1"
-	rows, err := r.store.db.Query(fmt.Sprintf("SELECT tag_id, object_id FROM %s WHERE object_id = $1", tableName), id)
+	// rows, err := r.store.db.Query(
+	// 	fmt.Sprintf("SELECT id, rating, header, text, created_at, updated_at, "+
+	// 		"u.id, u.username, u.first_name, u.secondname, u.role, u.created_at, u.updated_at, u.avatar FROM %s "+
+	// 		"JOIN users u ON %s.creator_username = u.username " +
+	// 		"WHERE object_id = $1", tableName, tableName),
+	// 	objId)
+	// if err != nil{
+	// 	return nil, err
+	// }
+	rows, err := r.store.db.Query(
+		fmt.Sprintf("SELECT tag_id, object_id FROM %s WHERE object_id = $1", tableName), id)
 	if err != nil{
 		return nil, err
 	}
@@ -151,4 +185,34 @@ func (r *TagRepository) DeleteByTagIdForObject(id int, tableName string) error{
 		return err
 	}
 	return nil
+}
+
+func (r *TagRepository) TagObjToTag(tagsForObj []model.TagForObject) ([]model.Tag, error) {
+    tags := make([]model.Tag, 0)
+
+    for _, tagObj := range tagsForObj {
+        tag, err := r.FindById(tagObj.Tag.ID)
+        if err != nil {
+            return nil, err
+        }
+
+        tags = append(tags, tag)
+    }
+
+    return tags, nil
+}
+
+func (r *TagRepository) TagObjToTagWithTx(tx *sql.Tx, tagsForObj []model.TagForObject) ([]model.Tag, error) {
+    tags := make([]model.Tag, 0)
+
+    for _, tagObj := range tagsForObj {
+        tag, err := r.FindByIdWithTx(tagObj.Tag.ID, tx)
+        if err != nil {
+            return nil, err
+        }
+
+        tags = append(tags, tag)
+    }
+
+    return tags, nil
 }

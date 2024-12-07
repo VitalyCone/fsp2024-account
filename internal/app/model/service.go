@@ -9,7 +9,7 @@ type Service struct {
 	Text        string
 	Price       float32
 	//Reviews     []Review
-	//Tags        []Tag
+	Tags        []Tag
 	CreatedAt   time.Time
 	UpdatedAt	time.Time
 }
