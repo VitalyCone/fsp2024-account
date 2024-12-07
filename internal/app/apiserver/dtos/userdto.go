@@ -28,12 +28,12 @@ func (c *CreateUserDto) ToModel(passHash string) model.User {
 }
 
 type ModifyUserDto struct {
-	Username    string `json:"username" form:"username" validate:"alphanum,min=3,max=32"`
-	OldPassword string `json:"old_password" form:"old_password" validate:"min=3,max=32"`
-	NewPassword string `json:"new_password" form:"new_password" validate:"min=3,max=32"`
+	Username    string `json:"username" form:"username"`
+	OldPassword string `json:"old_password" form:"old_password"`
+	NewPassword string `json:"new_password" form:"new_password"`
 	Avatar      []byte `json:"avatar" form:"avatar"`
-	FirstName   string `json:"first_name" form:"first_name" validate:"max=50"`
-	SecondName  string `json:"second_name" form:"second_name" validate:"max=50"`
+	FirstName   string `json:"first_name" form:"first_name"`
+	SecondName  string `json:"second_name" form:"second_name"`
 }
 
 func (u *ModifyUserDto) ToModel(passHash string) model.User {

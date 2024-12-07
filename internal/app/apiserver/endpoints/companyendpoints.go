@@ -107,19 +107,51 @@ func (ep *Endpoints) GetCompanies(g *gin.Context) {
 // @Summary Delete company
 // @Schemes
 // @Description Delete company
+// @Security ApiKeyAuth
 // @Tags Company
 // @Accept json
 // @Produce json
 // @Param company_id path int true "company id"
 // @Router /company/{company_id} [DELETE]
 func (ep *Endpoints) DeleteCompany(g *gin.Context) {
-	id, err := strconv.Atoi(g.Param("company_id"))
+    tokenString := g.GetHeader("token")
+	if tokenString == "" {
+		g.JSON(http.StatusUnauthorized, "token nil")
+		return
+	}
+
+	token, err := verifyToken(tokenString)
+	if err != nil {
+		g.JSON(http.StatusUnauthorized, "token not verifed or nil")
+		return
+	}
+
+	username, err := token.Claims.GetSubject()
+	if err != nil {
+		g.JSON(http.StatusNotFound, "Failed to get subject from token")
+		return
+	}
+
+	company_id, err := strconv.Atoi(g.Param("company_id"))
+
 	if err != nil {
 		g.JSON(http.StatusBadRequest, gin.H{"Invalid type of id": error.Error(err)})
 		return
 	}
 
-    ep.store.Company().DeleteById(id)
+	exist, err := ep.store.Participant().IsParticipant(username, dtos.ModeratorsParticipantTable, company_id)
+	if err != nil{
+		g.JSON(http.StatusNotFound, "Failed to get permissions")
+		return
+	}
+
+	if !exist{
+		g.JSON(http.StatusForbidden, "You are not allowed to delete service")
+		return
+	}
+    
+
+    ep.store.Company().DeleteById(company_id)
 
     g.JSON(http.StatusNoContent, http.NoBody)
 }

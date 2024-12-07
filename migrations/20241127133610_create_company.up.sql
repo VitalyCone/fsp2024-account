@@ -4,6 +4,10 @@ CREATE TABLE companies (
     avatar BYTEA,  -- Хранение изображения в формате bytea
     name VARCHAR(100) NOT NULL UNIQUE,  -- Имя компании (не более 100 символов, уникально)
     description TEXT,  -- Описание компании
+    email VARCHAR(255),  -- Email компании
+    phone VARCHAR(50),  -- Телефон компании
+    inn VARCHAR(12),  -- ИНН компании
+    manager_telegram VARCHAR(100),  -- Telegram менеджера
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

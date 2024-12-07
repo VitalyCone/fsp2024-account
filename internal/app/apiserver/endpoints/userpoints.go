@@ -274,10 +274,10 @@ func (ep *Endpoints) PutUserInfo(g *gin.Context){
     }
 
     validate := validator.New()
-    if err := validate.Struct(userDto); err != nil{
-        g.JSON(http.StatusBadRequest, gin.H{"Failed validation": err.Error()})
-        return
-    }
+    // if err := validate.Struct(userDto); err != nil{
+    //     g.JSON(http.StatusBadRequest, gin.H{"Failed validation": err.Error()})
+    //     return
+    // }
 
     userDto.Username = strings.ToLower(userDto.Username)
 
@@ -295,7 +295,10 @@ func (ep *Endpoints) PutUserInfo(g *gin.Context){
                 g.JSON(http.StatusBadRequest, gin.H{"Old password is incorrect": err.Error()})
                 return
             }
-
+            if err := validate.Var(userDto.NewPassword, "min=3,max=32"); err != nil {
+                g.JSON(http.StatusBadRequest, gin.H{"Invalid new password": err.Error()})
+                return
+            }
             passHash, err := bcrypt.GenerateFromPassword([]byte(userDto.NewPassword), bcryptSalt)
             if err != nil{
                 g.JSON(http.StatusBadRequest, gin.H{"Failed to generate password hash": err.Error()})
@@ -307,10 +310,18 @@ func (ep *Endpoints) PutUserInfo(g *gin.Context){
     }
 
     if userDto.FirstName != ""{
+        if err := validate.Var(userDto.FirstName, "min=2,max=50"); err != nil {
+            g.JSON(http.StatusBadRequest, gin.H{"Invalid first name": err.Error()})
+            return
+        }
         userModel.FirstName = userDto.FirstName
     }
 
     if userDto.SecondName != ""{
+        if err := validate.Var(userDto.SecondName, "min=2,max=50"); err != nil {
+            g.JSON(http.StatusBadRequest, gin.H{"Invalid second name": err.Error()})
+            return
+        }
         userModel.SecondName = userDto.SecondName
     }
 
@@ -323,6 +334,10 @@ func (ep *Endpoints) PutUserInfo(g *gin.Context){
         _, exist := ep.store.User().FindUserByUsername(userDto.Username)
         if exist == nil{
             g.JSON(http.StatusBadRequest, "Username already exists")
+            return
+        }
+        if err := validate.Var(userDto.Username, "alphanum,min=3,max=32"); err != nil {
+            g.JSON(http.StatusBadRequest, gin.H{"Invalid username": err.Error()})
             return
         }
 

@@ -12,13 +12,6 @@ type CompanyRepository struct {
 }
 
 func (r *CompanyRepository) Create(m *model.Company, creatorUsername, membersParticipantTable, moderatorsParticipantTable string) error{
-	// if err := r.store.db.QueryRow(
-	// 	"INSERT INTO companies (avatar, name, description) "+
-	// 		"VALUES ($1, $2, $3) RETURNING id, created_at, updated_at",
-	// 	m.Avatar, m.Name, m.Description).Scan(
-	// 	&m.ID, &m.CreatedAt, &m.UpdatedAt); err != nil {
-	// 	return err
-	// }
 	
 	participants := make([]model.Participant, 0)
 
@@ -29,13 +22,20 @@ func (r *CompanyRepository) Create(m *model.Company, creatorUsername, membersPar
 	defer tx.Rollback()
 
 	stmt, err := tx.Prepare(
-		"INSERT INTO companies (avatar, name, description) "+
-			"VALUES ($1, $2, $3) RETURNING id, created_at, updated_at")
+		"INSERT INTO companies (avatar, name, description, email, phone, inn, manager_telegram) "+
+			"VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, created_at, updated_at")
 	if err != nil{
 		return errors.New("company: " + err.Error())
 	}
 
-	stmt.QueryRow(m.Avatar, m.Name, m.Description).Scan(&m.ID, &m.CreatedAt, &m.UpdatedAt)
+	stmt.QueryRow(
+		m.Avatar,
+		m.Name, 
+		m.Description,
+		m.Email,
+		m.Phone,
+		m.INN,
+		m.ManagerTelegram).Scan(&m.ID, &m.CreatedAt, &m.UpdatedAt)
 	
 	participants = append(participants, model.Participant{
 		Company: *m,
@@ -68,7 +68,7 @@ func (r *CompanyRepository) FindAll() ([]model.Company, error) {
 	companies :=  make([]model.Company, 0)
 
 	rows, err := r.store.db.Query(
-		"SELECT id,avatar,name,description,created_at,updated_at FROM companies")
+		"SELECT id,avatar,name,description,email, phone, inn, manager_telegram,created_at,updated_at FROM companies")
 	if err != nil{
 		return nil, err
 	}
@@ -78,7 +78,16 @@ func (r *CompanyRepository) FindAll() ([]model.Company, error) {
 		var company model.Company
 
 		err := rows.Scan(
-			&company.ID, &company.Avatar, &company.Name, &company.Description, &company.CreatedAt, &company.UpdatedAt)
+			&company.ID, 
+			&company.Avatar, 
+			&company.Name, 
+			&company.Description, 
+			&company.Email, 
+			&company.Phone,
+			&company.INN,
+			&company.ManagerTelegram,
+			&company.CreatedAt, 
+			&company.UpdatedAt)
 		if err != nil{
 			return nil, err
 		}
@@ -93,7 +102,7 @@ func (r *CompanyRepository) FindAllToCreateCompanyResponse() ([]dtos.CreateCompa
 	companies :=  make([]dtos.CreateCompanyResponse, 0)
 
 	rows, err := r.store.db.Query(
-		"SELECT id,avatar,name,description,created_at,updated_at FROM companies")
+		"SELECT id,avatar,name,description, email, phone, inn, manager_telegram, created_at,updated_at FROM companies")
 	if err != nil{
 		return nil, err
 	}
@@ -103,7 +112,16 @@ func (r *CompanyRepository) FindAllToCreateCompanyResponse() ([]dtos.CreateCompa
 		var company model.Company
 
 		err := rows.Scan(
-			&company.ID, &company.Avatar, &company.Name, &company.Description, &company.CreatedAt, &company.UpdatedAt)
+			&company.ID, 
+			&company.Avatar, 
+			&company.Name, 
+			&company.Description, 
+			&company.Email, 
+			&company.Phone,
+			&company.INN,
+			&company.ManagerTelegram,
+			&company.CreatedAt, 
+			&company.UpdatedAt)
 		if err != nil{
 			return nil, err
 		}
@@ -120,27 +138,19 @@ func (r *CompanyRepository) FindById(id int, membersParticipantTable, moderators
 
 	company.ID = id
 	if err := r.store.db.QueryRow(
-		"SELECT avatar,name,description,created_at,updated_at FROM companies WHERE id = $1",
+		"SELECT avatar,name,description, email, phone, inn, manager_telegram,created_at,updated_at FROM companies WHERE id = $1",
 		id).Scan(
-		&company.Avatar, &company.Name, &company.Description, &company.CreatedAt, &company.UpdatedAt); err != nil {
+		&company.Avatar, 
+		&company.Name, 
+		&company.Description, 
+		&company.Email, 
+		&company.Phone,
+		&company.INN,
+		&company.ManagerTelegram,
+		&company.CreatedAt, 
+		&company.UpdatedAt); err != nil {
 		return model.Company{}, err
 	}
-	// members, _ := r.store.Participant().FindByCompanyId(company.ID, membersParticipantTable)
-	// membersUsers, err := r.store.User().FindUsersByParticipants(members)
-	// if err != nil{
-	// 	return model.Company{}, err
-	// }
-	// moderators, _ := r.store.Participant().FindByCompanyId(company.ID, moderatorsParticipantTable)
-	// moderatorsUsers, err := r.store.User().FindUsersByParticipants(moderators)
-	// if err != nil{
-	// 	return model.Company{}, err
-	// }
-
-	// reviews, err := r.store.Review().FindAllByObjectId(reviewsTable, company.ID)
-	// if err != nil{
-	// 	return model.Company{}, err
-	// }
-	// company.Moderators, company.Members, company.Reviews = moderatorsUsers, membersUsers, reviews
 
 	return company, nil
 }
@@ -150,9 +160,17 @@ func (r *CompanyRepository) FindByName(name string) (model.Company, error) {
 
 	company.Name = name
 	if err := r.store.db.QueryRow(
-		"SELECT avatar,id,description,created_at,updated_at FROM companies WHERE id = $1",
+		"SELECT avatar,id,description, email, phone, inn, manager_telegram,created_at,updated_at FROM companies WHERE id = $1",
 		name).Scan(
-		&company.Avatar, &company.ID, &company.Description, &company.CreatedAt, &company.UpdatedAt); err != nil {
+		&company.Avatar, 
+		&company.ID,
+		&company.Description,
+		&company.Email, 
+		&company.Phone,
+		&company.INN,
+		&company.ManagerTelegram,
+		&company.CreatedAt, 
+		&company.UpdatedAt); err != nil {
 		return model.Company{}, err
 	}
 	return company, nil

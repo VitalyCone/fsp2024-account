@@ -7,12 +7,23 @@ definitions:
         type: array
       description:
         type: string
+      email:
+        type: string
+      inn:
+        type: string
+      manager_telegram:
+        type: string
       name:
         maxLength: 100
         minLength: 1
         type: string
+      phone:
+        type: string
     required:
+    - email
+    - inn
     - name
+    - phone
     type: object
   dtos.CreateParticipantDto:
     properties:
@@ -114,22 +125,14 @@ definitions:
           type: integer
         type: array
       first_name:
-        maxLength: 50
         type: string
       new_password:
-        maxLength: 32
-        minLength: 3
         type: string
       old_password:
-        maxLength: 32
-        minLength: 3
         type: string
       second_name:
-        maxLength: 50
         type: string
       username:
-        maxLength: 32
-        minLength: 3
         type: string
     type: object
   dtos.UserDto:
@@ -271,6 +274,8 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - ApiKeyAuth: []
       summary: Delete company
       tags:
       - Company

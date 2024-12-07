@@ -330,6 +330,11 @@ const docTemplate = `{
                 "responses": {}
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Delete company",
                 "consumes": [
                     "application/json"
@@ -1047,7 +1052,10 @@ const docTemplate = `{
         "dtos.CreateCompanyDto": {
             "type": "object",
             "required": [
-                "name"
+                "email",
+                "inn",
+                "name",
+                "phone"
             ],
             "properties": {
                 "avatar": {
@@ -1059,10 +1067,22 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "email": {
+                    "type": "string"
+                },
+                "inn": {
+                    "type": "string"
+                },
+                "manager_telegram": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 1
+                },
+                "phone": {
+                    "type": "string"
                 }
             }
         },
@@ -1208,27 +1228,19 @@ const docTemplate = `{
                     }
                 },
                 "first_name": {
-                    "type": "string",
-                    "maxLength": 50
+                    "type": "string"
                 },
                 "new_password": {
-                    "type": "string",
-                    "maxLength": 32,
-                    "minLength": 3
+                    "type": "string"
                 },
                 "old_password": {
-                    "type": "string",
-                    "maxLength": 32,
-                    "minLength": 3
+                    "type": "string"
                 },
                 "second_name": {
-                    "type": "string",
-                    "maxLength": 50
+                    "type": "string"
                 },
                 "username": {
-                    "type": "string",
-                    "maxLength": 32,
-                    "minLength": 3
+                    "type": "string"
                 }
             }
         },

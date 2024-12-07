@@ -99,15 +99,6 @@ func (s *APIServer) configureEndpoints() {
 			company.GET("/review/:review_id", endpoint.GetCompanyReview)
 			company.DELETE("/review/:review_id", endpoint.DeleteCompanyReview)
 		}
-
-		// path.GET("/review/:id", endpoint.GetServiceType)
-		// path.GET("/review", endpoint.GetServiceTypes)
-		// path.POST("/review", endpoint.PostServiceType)
-		// path.DELETE("/review/:id", endpoint.DeleteServiceType)
-
-		// path.GET("/reviewtype/:id", endpoint.GetReviewType)
-		// path.POST("/reviewtype", endpoint.PostReviewType)
-		// path.DELETE("/reviewtype/:id", endpoint.DeleteReviewType)
 	}
 
 	s.router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
